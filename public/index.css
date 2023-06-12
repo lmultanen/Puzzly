@@ -1,0 +1,79 @@
+#solveGrid {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  min-width: 50%;
+  margin: auto;
+  margin-top: 1em;
+  justify-self: center;
+  align-items: center;
+}
+.solveGridRow {
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+}
+.solveGridSquare {
+  border: 1px gray solid;
+  border-radius: 10%;
+  margin: 0.5em;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+}
+#playPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#playPage h2 {
+  margin-top: 0.5em;
+}
+#navbar {
+  display: flex;
+  flex-direction: row;
+  height: 80px;
+  justify-content: center;
+  align-items: center;
+  background-color: #911691;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 99;
+}
+#navbar a {
+  margin: 0.5em;
+  font-size: larger;
+  text-decoration: none;
+  color: white;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 0.25em;
+}
+#navbar .selected {
+  border-bottom: 1px solid white;
+}
+@media screen and (max-width: 500px) {
+  #navbar {
+    height: 120px;
+  }
+  #navbar a {
+    font-size: large;
+  }
+}
+* {
+  margin: 0px;
+  max-width: 100%;
+}
+#root {
+  min-height: 100%;
+}
+.nav-buffer {
+  height: 80px;
+}
+@media screen and (max-width: 500px) {
+  .nav-buffer {
+    height: 120px;
+  }
+}
