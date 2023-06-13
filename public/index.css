@@ -24,10 +24,39 @@
 .solveGridSquare.selected {
   border: 1px blue solid;
   transform: scale(1.1);
+  animation: none;
+}
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+  65% {
+    transform: rotate(-3deg);
+  }
+  80% {
+    transform: rotate(1.5deg);
+  }
+  90% {
+    transform: rotate(-1.5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+.wiggle {
+  display: inline-block;
+  animation: wiggle 1s infinite;
 }
 .wiggle:hover {
   cursor: pointer;
   transform: scale(1.1);
+  animation: none;
 }
 .clickable:hover {
   cursor: pointer;
@@ -94,7 +123,7 @@
   height: auto;
   min-height: 130px;
   border: 1px solid black;
-  border-radius: 4%;
+  border-radius: 5px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

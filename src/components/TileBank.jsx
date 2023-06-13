@@ -2,17 +2,6 @@ import React, { useState, useEffect } from "react";
 
 const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateGridSquare}) => {
 
-    // may need to input tiles as a prop
-    // which would mean need an individual Tile component
-    // that could make sense: in the Play page, can grab the Tiles from backend
-    // can then keep track of an Array of Tiles that gets passed into the TileBank
-    // - pass individual tiles into individual SolveGridSquare components as well
-
-    // inside Tile component, will want to assign all tiles an onClick handler
-    // - handler will select tile when no other tiles are selected
-    // - may also bubble up a bool or fire a handler to let the Play component/SolveGrid component know when tile is selected
-    // - 
-
     const [selected, setSelected] = useState(null)
     // may ultimately want to move this to a redux store; would be easier than passing around stuff
 
@@ -37,7 +26,6 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
                 addToTileBank(selected.textContent, e.target)
                 // will need to change later
                 updateGridSquare(Number(e.target.textContent));
-                // bubbleUpSelected(null);
                 setSelected(null);
             }
             else if (tiles.includes(Number(selected.textContent)) 
@@ -50,10 +38,6 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
                 setSelected(null);
                 bubbleUpSelected(null);
             }
-            // this may work for now in dummy case, but will likely want to flesh out further when adding in real tiles
-            // will also need to build out functionality to swap two tiles/place tile
-            // - currently, just unselecting the first tile no matter what
-
         }
     }
 
@@ -61,7 +45,6 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
         <div id="tileBankContainer">
             <p>Tile Bank:</p>
             <div id="tileBank">
-                {/* Make a tile bank here without any tiles in them. Focus on shape/basic orientation for now. */}
                 {tiles.length ? tiles.map((tile,idx) => (
                     <div className="tileBankTile" key={idx} onClick={onClickHandler}>
                         {tile}
@@ -75,10 +58,6 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
 export default TileBank;
 
 // TODO: 
-// - solve bug where when clicking same tile spot in bank after already moving it up to solve grid, need to click twice to select
-// - add ability to click on tiles in solve grid and move around/even swap
-// --- will require using a different method than the addToBank; may need to make more robust or a general 'swap' method
-// --- could make a swap method that takes in the 'selected' and target and just change their values
 // - after that, can start hooking up some logic to check if player has won
 // --- for this dummy case, will just check that numbers are in order
 // --- for actual game, may rely on checking that the object ids are in order or something
@@ -89,6 +68,7 @@ export default TileBank;
 // --- json parse/stringify would be my friend
 
 // - add a button to remove all tiles from solve grid and add to bank; basically a reset button
+// - add ability for player to move tile from grid directly to bank rather than swapping?
 
 // add some other local storage stats to start working on the 'share' page
 

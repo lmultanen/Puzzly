@@ -2,10 +2,6 @@ import React, { useState , useEffect } from "react";
 
 const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTileBank, updateGridValue}) => {
 
-    // make a 4x4 array? may need to be a useState type thing
-    // it's possible that the useState will be done in a subcomponent? each grid square could keep track of it's state, whether for a picture or empty
-    // const grid = [[0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]];
-    // const grid = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]];
     const baseGrid = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]];
 
     const [grid,setGrid] = useState(null);
@@ -21,7 +17,6 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
 
     useEffect(() => {
         setSelected(selectedTile);
-        console.log(swapCoords)
         if ((selectedTile === null) && (swapCoords !== null)) {
             setSwapCoords(null);
         }
@@ -30,8 +25,6 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
 
     useEffect(() => {
         if (updateGridValue) {
-            console.log(swapCoords)
-            console.log(updateGridValue)
             grid[swapCoords.row][swapCoords.col] = updateGridValue;
             setGrid(grid)
             setSelected(null)
@@ -40,7 +33,6 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
     },[updateGridValue])
 
     const onClickHandler = (rowId,colId) => (e) => {
-        console.log(grid)
         if (selected) {
             if (e.target.textContent) {
                 if (swapCoords) {
@@ -66,9 +58,7 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
             grid[rowId][colId] = Number(e.target.textContent);
             setGrid(grid)
             setSwapCoords(null);
-            console.log(grid)
         } else {
-            // handle clicking on gridSquare first
             if(e.target.textContent) {
                 setSelected(e.target);
                 bubbleUpSelected(e.target);
@@ -79,7 +69,6 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
 
     return(
         <div id="solveGrid">
-            {/* Should make a test 4x4 grid and then get some basic styling. Then work on more functionality. */}
             {grid?.length ? grid.map((row,rowId) => (
                 <div className="solveGridRow" key={rowId}>
                     {row.map((col,colId) => (
@@ -95,6 +84,3 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
 }
 
 export default SolveGrid;
-
-// weird bug where have to triple click on a swapped solve grid square with tile bank
-// something to do with swap coords
