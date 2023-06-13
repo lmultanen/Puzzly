@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const TileBank = ({tiles, selectedTile, bubbleUpSelected}) => {
+const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateGridSquare}) => {
 
     // may need to input tiles as a prop
     // which would mean need an individual Tile component
@@ -28,12 +28,19 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected}) => {
             bubbleUpSelected(e.target)
         }
         else {
-            // console.log(selected)
-            selected.className = "tileBankTile";
+            console.log(selected)
+            selected.className = selected.className.replace('selected','');
             
             // will need to modify this later with Tile constructs
             // basically, doesn't make sense to swap tiles inside tile bank; should just select new one
-            if (tiles.includes(Number(selected.textContent)) 
+            if (!tiles.includes(Number(selected.textContent))) {
+                addToTileBank(selected.textContent, e.target)
+                // will need to change later
+                updateGridSquare(Number(e.target.textContent));
+                // bubbleUpSelected(null);
+                setSelected(null);
+            }
+            else if (tiles.includes(Number(selected.textContent)) 
                 && selected.textContent !== e.target.textContent) {
                 e.target.className += " selected";
                 setSelected(e.target);

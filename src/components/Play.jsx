@@ -21,6 +21,7 @@ const Play = () => {
     const tiles = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 
     const [selectedTile, setSelectedTile] = useState(null)
+    const [updateGridValue, setUpdateGridValue] = useState(null)
 
     // might be able to json stringify/parse remaining tiles info to local storage?
 
@@ -44,10 +45,14 @@ const Play = () => {
         })
     },[timer])
 
+    useEffect(() => {
+
+    },[selectedTile])
+
     const bubbleUpSelected = (tile) => {
         setSelectedTile(tile);
-        console.log('selected tile bubbled up')
-        console.log(tile)
+        // console.log('selected tile bubbled up')
+        // console.log(tile)
     }   
 
     const removeFromTileBank = (tileToRemove) => {
@@ -55,16 +60,17 @@ const Play = () => {
         const removed = remainingTiles.filter(tile => tile != tileToRemove.textContent)
         console.log(removed)
         setRemainingTiles(removed)
-        
     }
 
     // may need to modify if type changes at all
     const addToTileBank = (tileToAdd, selected) => {
         const added = [...remainingTiles, Number(tileToAdd)]
-        const filtered = added.filter(tile => tile != selected.textContent)
+        const filtered = added.filter(tile => tile != selected?.textContent)
         setRemainingTiles(filtered)
-        // console.log(added)
-        // removeFromTileBank(selected)
+    }
+
+    const updateGridSquare = (value) => {
+        setUpdateGridValue(value)
     }
 
     return(
@@ -82,9 +88,9 @@ const Play = () => {
             <div className="nav-buffer"/>
             <h2>Puzzly #1</h2>
             <h4>Timer: {timer}s</h4>
-            <SolveGrid selected={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank}/>
+            <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue}/>
             <br/>
-            <TileBank tiles={remainingTiles} selected={selectedTile} bubbleUpSelected={bubbleUpSelected}/>
+            <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare}/>
         </div>
     )
 }

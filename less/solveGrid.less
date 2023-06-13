@@ -25,11 +25,22 @@
     // won't likely need text-align later; just for testing purposes now
 }
 
+.solveGridSquare.selected {
+    border: 1px blue solid;
+    transform: scale(1.1);
+    // no animation here 
+}
+
 .wiggle {
     
 }
 
 .wiggle:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.clickable:hover {
     cursor: pointer;
     transform: scale(1.1);
 }
