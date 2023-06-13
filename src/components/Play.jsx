@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SolveGrid from "./SolveGrid.jsx";
+import TileBank from "./TileBank.jsx";
 
 const Play = () => {
     // will likely need several useEffects/useStates
@@ -12,9 +13,22 @@ const Play = () => {
     const [completed, setCompleted] = useState(false);
     // will figure out how best to use/store a completed bool
 
+    // going to use a state for determining how many tiles in tile bank still
+    // will want to initially set in initial useEffect:
+    // - however, now the issue of how to store which tiles already been placed/etc
+    // - will get to that persistence issue later
+    const [remainingTiles, setRemainingTiles] = useState([])
+    const tiles = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+
+    const [selectedTile, setSelectedTile] = useState(null)
+
+    // might be able to json stringify/parse remaining tiles info to local storage?
+
     useEffect(() => {
         const currentTimer = Number(window.localStorage.getItem('currentTimer'));
         setTimer(currentTimer);
+        // will need to figure out how best to update this as tiles are moved around
+        setRemainingTiles(tiles);
     },[])
 
     useEffect(() => {
@@ -29,6 +43,29 @@ const Play = () => {
             
         })
     },[timer])
+
+    const bubbleUpSelected = (tile) => {
+        setSelectedTile(tile);
+        console.log('selected tile bubbled up')
+        console.log(tile)
+    }   
+
+    const removeFromTileBank = (tileToRemove) => {
+        // will need to change this when using img urls, etc.
+        const removed = remainingTiles.filter(tile => tile != tileToRemove.textContent)
+        console.log(removed)
+        setRemainingTiles(removed)
+        
+    }
+
+    // may need to modify if type changes at all
+    const addToTileBank = (tileToAdd, selected) => {
+        const added = [...remainingTiles, Number(tileToAdd)]
+        const filtered = added.filter(tile => tile != selected.textContent)
+        setRemainingTiles(filtered)
+        // console.log(added)
+        // removeFromTileBank(selected)
+    }
 
     return(
         // <div>
@@ -45,13 +82,13 @@ const Play = () => {
             <div className="nav-buffer"/>
             <h2>Puzzly #1</h2>
             <h4>Timer: {timer}s</h4>
-            <SolveGrid/>
+            <SolveGrid selected={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank}/>
+            <br/>
+            <TileBank tiles={remainingTiles} selected={selectedTile} bubbleUpSelected={bubbleUpSelected}/>
         </div>
     )
 }
 
 export default Play;
 
-// first things first: make a SolveGrid component and a tile bank component
-// will then stack them on top of each other here
 // SolveGrid might even be built from a bunch of inidividual Square components. Can then pass individual tiles to those as a prop
