@@ -17,7 +17,6 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
             bubbleUpSelected(e.target)
         }
         else {
-            console.log(selected)
             selected.className = selected.className.replace('selected','');
             
             // will need to modify this later with Tile constructs
@@ -75,6 +74,8 @@ export default TileBank;
 // once this basic dummy fiunctionatliy in place, then start hooking up a backend and figuring out how to convert pictures to tiles
 // once that is in place, will need to seed images
 // - also will want a way to figure out how to add more images at a later date; goal should be enough for a year to start
+
+// add spinning wheel or something when loading the play page instead of seeing flash of empty boxes/text
 
 
 

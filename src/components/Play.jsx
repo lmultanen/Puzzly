@@ -18,6 +18,9 @@ const Play = () => {
     // - however, now the issue of how to store which tiles already been placed/etc
     // - will get to that persistence issue later
     const [remainingTiles, setRemainingTiles] = useState([])
+    const [sequencedTiles, setSequencedTiles] = useState([]) // will have a bubble up method from SolveGrid to set this
+
+    // will later need to generate these tiles/grab them from backend to pass to bank
     const tiles = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 
     const [selectedTile, setSelectedTile] = useState(null)
@@ -46,8 +49,41 @@ const Play = () => {
     },[timer])
 
     useEffect(() => {
-
     },[selectedTile])
+
+    useEffect(() => {
+        if (remainingTiles.length === 0 && sequencedTiles.length === 16) {
+            // check for win condition here
+            checkWinCondition()
+        }
+    }, [remainingTiles.length, sequencedTiles.length, sequencedTiles])
+    // need this to keep running when moving around finished tiles in above board
+
+    const checkTilesSequenced = () => {
+        for (let i = 0; i < sequencedTiles.length -1; i++) {
+            // will need to modify check here
+            if (sequencedTiles[i] > sequencedTiles[i+1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const checkWinCondition = () => {
+        // for now, since tiles just ordered by number, will check to see that they are sorted in order
+        // later, will need to update/modify with object/model id or something
+        if (checkTilesSequenced()) {
+            console.log("You Won!")
+        } else {
+            console.log("Hmm... something is out of place. Keep trying!")
+        }
+    }
+
+    const bubbleUpGrid = (arr2d) => {
+        const flattened = arr2d.flat()
+        const arr = flattened.filter(val => val)
+        setSequencedTiles(arr);
+    }
 
     const bubbleUpSelected = (tile) => {
         setSelectedTile(tile);
@@ -56,7 +92,6 @@ const Play = () => {
     const removeFromTileBank = (tileToRemove) => {
         // will need to change this when using img urls, etc.
         const removed = remainingTiles.filter(tile => tile != tileToRemove.textContent)
-        console.log(removed)
         setRemainingTiles(removed)
     }
 
@@ -76,7 +111,7 @@ const Play = () => {
             <div className="nav-buffer"/>
             <h2>Puzzly #1</h2>
             <h4>Timer: {timer}s</h4>
-            <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue}/>
+            <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid}/>
             <br/>
             <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare}/>
         </div>

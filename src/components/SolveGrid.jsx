@@ -1,6 +1,12 @@
 import React, { useState , useEffect } from "react";
 
-const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTileBank, updateGridValue}) => {
+const SolveGrid = ({
+        selectedTile,
+        bubbleUpSelected, 
+        removeFromTileBank, 
+        addToTileBank, 
+        updateGridValue,
+        bubbleUpGrid}) => {
 
     const baseGrid = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]];
 
@@ -26,6 +32,8 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
     useEffect(() => {
         if (updateGridValue) {
             grid[swapCoords.row][swapCoords.col] = updateGridValue;
+            // bubble up grid here
+            bubbleUpGrid(grid)
             setGrid(grid)
             setSelected(null)
             bubbleUpSelected(null)
@@ -56,6 +64,8 @@ const SolveGrid = ({selectedTile, bubbleUpSelected, removeFromTileBank, addToTil
             selected.className = selected.className.replace('selected','');
             bubbleUpSelected(null)
             grid[rowId][colId] = Number(e.target.textContent);
+            // bubbleUpGrid here
+            bubbleUpGrid(grid)
             setGrid(grid)
             setSwapCoords(null);
         } else {
