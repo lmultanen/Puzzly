@@ -10,28 +10,47 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
     },[selectedTile])
 
     const onClickHandler = (e) => {
+        console.log(e.target)
+        const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.textContent)))[0]
         if (!selected) {
             e.target.className += " selected";
             // will later likely change this somehow
-            setSelected(e.target)
-            bubbleUpSelected(e.target)
+            // const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.textContent)))[0]
+            console.log(tiles)
+            console.log(selectedTile)
+            // refactoring to pass in current div in object, then will add tile once functionality working
+            setSelected({div: e.target, tile: selectedTile})
+            bubbleUpSelected({div: e.target, tile: selectedTile})
         }
         else {
-            selected.className = selected.className.replace('selected','');
+            selected.div.className = selected.div.className.replace('selected','');
             
             // will need to modify this later with Tile constructs
             // basically, doesn't make sense to swap tiles inside tile bank; should just select new one
-            if (!tiles.includes(Number(selected.textContent))) {
-                addToTileBank(selected.textContent, e.target)
+
+            const tileIds = tiles.map(tile => tile.id)
+            console.log(tileIds)
+            console.log
+
+            if (!tileIds.includes(Number(selected.div.textContent))) {
+                // pass tile object instead of number here
+                // necessary with how I had to refactor this method
+                addToTileBank(selected.tile, {div: e.target})
                 // will need to change later
-                updateGridSquare(Number(e.target.textContent));
+
+                // PASS IN TILE CONSTRUCT HERE
+                
+
+                updateGridSquare(selectedTile);
                 setSelected(null);
             }
-            else if (tiles.includes(Number(selected.textContent)) 
+            else if (tileIds.includes(Number(selected.div.textContent)) 
                 && selected.textContent !== e.target.textContent) {
                 e.target.className += " selected";
-                setSelected(e.target);
-                bubbleUpSelected(e.target)
+
+                // PASS IN TILE CONSTRUCT HERE
+                setSelected({div: e.target, tile: selectedTile});
+                bubbleUpSelected({div: e.target, tile: selectedTile})
             }
             else {
                 setSelected(null);
@@ -46,7 +65,7 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
             <div id="tileBank">
                 {tiles.length ? tiles.map((tile,idx) => (
                     <div className="tileBankTile" key={idx} onClick={onClickHandler}>
-                        {tile}
+                        {tile.id}
                     </div>
                 )) : <div>No Tiles Remaining</div>}
             </div>
@@ -59,6 +78,9 @@ export default TileBank;
 // TODO: 
 // - after that, can start hooking up some logic to check if player has won
 // --- for actual game, may rely on checking that the object ids are in order or something
+// --- something worth looking into: instead of storing tiles on back end, can i generate them in the Play component?
+// --- for instance, figure out a way to take in the img from backend, then cut it up in the component itself and randomize the tile order?
+// --- might be easier than having to continually store/delete from a dedicated table on backend
 // - add some additional styling
 // - add some additional local storage stats
 // - develop win page modal pop up; can display historical statistics and allow user to share current day's time

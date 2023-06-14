@@ -14,6 +14,7 @@ const Play = () => {
     // will figure out how best to use/store a completed bool
 
     // will likely use a useSelector once redux set up to grab this value
+    // may end up just being the index of the image we use in the db
     const [currentPuzzly, setCurrentPuzzly] = useState(2)
     // will grab this from localStorage to start if exists; later, could live in user db table
 
@@ -26,8 +27,6 @@ const Play = () => {
     const [selectedTile, setSelectedTile] = useState(null)
     const [updateGridValue, setUpdateGridValue] = useState(null)
 
-    // will pass in baseGrid to SolveGrid
-    // but first
     const baseGrid = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]];
 
     const [savedGrid,setSavedGrid] = useState(null);
@@ -59,16 +58,20 @@ const Play = () => {
             const savedTiles = JSON.parse(window.localStorage.getItem('remainingPuzzlyTiles'))
             const storedSequence = JSON.parse(window.localStorage.getItem('sequencedPuzzlyTiles')) 
 
-            if (savedTiles.length + storedSequence.length === 16) {
+            if (savedTiles?.length + storedSequence?.length === 16) {
                 setRemainingTiles(savedTiles);
                 setSequencedTiles(storedSequence)
             } else {
-                setRemainingTiles(tiles)
+                // generate tiles here
+                // make a method that first generates random tiles between 1-16 (or 0-15)
+                // - then, make those tiles into objects instead; will require a lot of refactoring of existing logic
+                // setRemainingTiles(tiles)
+                randomizeTiles();
             }
 
             // edge case check for when user opens for first time at start of day
             // checking just for savedTiles 0 length with way storage is set up will throw a false negative
-            if (savedTiles.length === 0 && storedSequence === 0) {
+            if (savedTiles?.length === 0 && storedSequence === 0) {
                 checkWinCondition();
             }
         }
@@ -98,9 +101,25 @@ const Play = () => {
         }
     }, [remainingTiles.length, sequencedTiles.length, sequencedTiles])
 
+    const randomizeTiles = () => {
+        let tileArr = [];
+        for (let i=1; i<=16; i++) {
+            tileArr.push({
+                id: i,
+            }) // make into an object later
+        }
+        // randomize loop
+        for (let i=15; i>=0; i--) {
+            let j = Math.floor(Math.random()*(i+1))
+            let temp = tileArr[i];
+            tileArr[i] = tileArr[j];
+            tileArr[j] = temp;
+        }
+        setRemainingTiles(tileArr);
+    }
+
     const checkTilesSequenced = () => {
         const arr = (sequencedTiles.length === 16) ? sequencedTiles : savedGrid?.flat().filter(val => val);
-        console.log(arr)
         if (!arr || arr.length !== 16) {
             return false;
         }
@@ -126,7 +145,7 @@ const Play = () => {
             window.localStorage.setItem('currentPuzzlyTimer','0')
             window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
             window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
-
+            window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
             console.log(`You completed Puzzly ${currentPuzzly} in ${timer} seconds!`)
         } else {
             console.log("Hmm... something is out of place. Keep trying!")
@@ -137,9 +156,8 @@ const Play = () => {
         // save grid to local storage here
         window.localStorage.setItem('savedPuzzlyGrid', JSON.stringify(arr2d))
         setSavedGrid(arr2d)
-
         const flattened = arr2d.flat()
-        const arr = flattened.filter(val => val)
+        const arr = flattened.filter(val => val?.id).map(val => val.id)
         setSequencedTiles(arr);
     }
 
@@ -149,14 +167,18 @@ const Play = () => {
 
     const removeFromTileBank = (tileToRemove) => {
         // will need to change this when using img urls, etc.
-        const removed = remainingTiles.filter(tile => tile != tileToRemove.textContent)
+        const removed = remainingTiles.filter(tile => tile.id != tileToRemove.id)
         setRemainingTiles(removed)
     }
 
     // may need to modify if type changes at all
     const addToTileBank = (tileToAdd, selected) => {
-        const added = [...remainingTiles, Number(tileToAdd)]
-        const filtered = added.filter(tile => tile != selected?.textContent)
+        // console.log(selected)
+        console.log('adding to tile bank')
+        console.log(tileToAdd)
+        console.log(selected)
+        const added = [...remainingTiles, tileToAdd]
+        const filtered = added.filter(tile => tile.id != selected?.div.textContent)
         setRemainingTiles(filtered)
     }
 

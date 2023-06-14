@@ -33,7 +33,7 @@ const SolveGrid = ({
     },[selectedTile])
 
     useEffect(() => {
-        if (updateGridValue) {
+        if (updateGridValue && swapCoords) {
             grid[swapCoords.row][swapCoords.col] = updateGridValue;
             // bubble up grid here
             bubbleUpGrid(grid)
@@ -53,32 +53,41 @@ const SolveGrid = ({
                 if (e.target.textContent) {
                     if (swapCoords) {
                         // will need to improve this later
-                        grid[swapCoords.row][swapCoords.col] = Number(e.target.textContent);
+
+                        // NEED TO SWAP ACTUAL TILES HERE
+                        // currently just overwriting values in array; need to reset actual object
+                        grid[swapCoords.row][swapCoords.col] = grid[rowId][colId];
                     }
                     else {
-                        addToTileBank(e.target.textContent, selected)
+                        // need to get the actual tile here
+                        addToTileBank(grid[rowId][colId], selected)
                     }
-                    e.target.textContent = selected.textContent;
+                    // e.target.textContent = selected.div.textContent;
+                    grid[rowId][colId] = selected.tile;
                 }
                 else {
-                    e.target.textContent = selected.textContent;
+                    // e.target.textContent = selected.tile;
+                    // need to figure out how to actually use the row/col
+                    grid[rowId][colId] = selected.tile;
                     if (swapCoords) {
                         grid[swapCoords.row][swapCoords.col] = null;
                     }
                     else {
-                        removeFromTileBank(selected)
+                        removeFromTileBank(selected.tile)
                     }
                 }
-                selected.className = selected.className.replace('selected','');
+                selected.div.className = selected.div.className.replace('selected','');
                 bubbleUpSelected(null)
-                grid[rowId][colId] = Number(e.target.textContent);
+                grid[rowId][colId] = selected.tile;
                 bubbleUpGrid(grid)
                 setGrid(grid)
                 setSwapCoords(null);
             } else {
                 if(e.target.textContent) {
-                    setSelected(e.target);
-                    bubbleUpSelected(e.target);
+                    console.log(e.target)
+                    console.log(grid[rowId][colId])
+                    setSelected({div: e.target, tile: grid[rowId][colId]});
+                    bubbleUpSelected({div: e.target, tile: grid[rowId][colId]});
                     setSwapCoords({row: rowId, col: colId});
                 }
             }
@@ -91,8 +100,8 @@ const SolveGrid = ({
                 <div className="solveGridRow" key={rowId}>
                     {row.map((col,colId) => (
                         // may ultimately move this div into separate componenet
-                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.textContent) === col) && col)? "selected" : ''}`} key={colId}  onClick={onClickHandler(rowId,colId)}>
-                            {col ? col : ''}
+                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId}  onClick={onClickHandler(rowId,colId)}>
+                            {col?.id ? col.id : col}
                         </div>
                     ))}
                 </div>
@@ -102,3 +111,8 @@ const SolveGrid = ({
 }
 
 export default SolveGrid;
+
+// later add-on: could customize grid size somewhat; add in 5x5 or 6x6 setting
+
+// need to refactor storing numbers to tiles...
+// bugs to fix: clicking from grid to tile bank doesn't work
