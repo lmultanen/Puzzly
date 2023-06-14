@@ -10,45 +10,26 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
     },[selectedTile])
 
     const onClickHandler = (e) => {
-        console.log(e.target)
-        const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.textContent)))[0]
+        const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.dataset.tileId)))[0]
         if (!selected) {
             e.target.className += " selected";
-            // will later likely change this somehow
-            // const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.textContent)))[0]
-            console.log(tiles)
-            console.log(selectedTile)
-            // refactoring to pass in current div in object, then will add tile once functionality working
             setSelected({div: e.target, tile: selectedTile})
             bubbleUpSelected({div: e.target, tile: selectedTile})
         }
         else {
             selected.div.className = selected.div.className.replace('selected','');
-            
-            // will need to modify this later with Tile constructs
-            // basically, doesn't make sense to swap tiles inside tile bank; should just select new one
-
             const tileIds = tiles.map(tile => tile.id)
-            console.log(tileIds)
-            console.log
 
-            if (!tileIds.includes(Number(selected.div.textContent))) {
-                // pass tile object instead of number here
+            if (!tileIds.includes(selected.tile.id)) {
                 // necessary with how I had to refactor this method
                 addToTileBank(selected.tile, {div: e.target})
-                // will need to change later
-
-                // PASS IN TILE CONSTRUCT HERE
-                
-
                 updateGridSquare(selectedTile);
                 setSelected(null);
             }
-            else if (tileIds.includes(Number(selected.div.textContent)) 
-                && selected.textContent !== e.target.textContent) {
+            else if (tileIds.includes(selected.tile.id) 
+                && selected.tile.id !== Number(e.target.dataset.tileId)) {
                 e.target.className += " selected";
 
-                // PASS IN TILE CONSTRUCT HERE
                 setSelected({div: e.target, tile: selectedTile});
                 bubbleUpSelected({div: e.target, tile: selectedTile})
             }
@@ -64,7 +45,7 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
             <p>Tile Bank:</p>
             <div id="tileBank">
                 {tiles.length ? tiles.map((tile,idx) => (
-                    <div className="tileBankTile" key={idx} onClick={onClickHandler}>
+                    <div className="tileBankTile" key={idx} data-tile-id={tile.id} onClick={onClickHandler}>
                         {tile.id}
                     </div>
                 )) : <div>No Tiles Remaining</div>}

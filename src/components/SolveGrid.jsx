@@ -83,9 +83,7 @@ const SolveGrid = ({
                 setGrid(grid)
                 setSwapCoords(null);
             } else {
-                if(e.target.textContent) {
-                    console.log(e.target)
-                    console.log(grid[rowId][colId])
+                if(Number(e.target.dataset.tileId)) {
                     setSelected({div: e.target, tile: grid[rowId][colId]});
                     bubbleUpSelected({div: e.target, tile: grid[rowId][colId]});
                     setSwapCoords({row: rowId, col: colId});
@@ -100,7 +98,7 @@ const SolveGrid = ({
                 <div className="solveGridRow" key={rowId}>
                     {row.map((col,colId) => (
                         // may ultimately move this div into separate componenet
-                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId}  onClick={onClickHandler(rowId,colId)}>
+                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId}  onClick={onClickHandler(rowId,colId)} data-tile-id={col?.id ? col.id : 0}>
                             {col?.id ? col.id : col}
                         </div>
                     ))}
