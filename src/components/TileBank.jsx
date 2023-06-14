@@ -58,26 +58,19 @@ export default TileBank;
 
 // TODO: 
 // - after that, can start hooking up some logic to check if player has won
-// --- for this dummy case, will just check that numbers are in order
 // --- for actual game, may rely on checking that the object ids are in order or something
 // - add some additional styling
-// - when game completed, reset local storage timer to zero
-// - work on other persistance/saving tile positioning in local storage
-// - could maybe just save both the solve grid and remainingTiles and load those directly
-// --- json parse/stringify would be my friend
+// - add some additional local storage stats
+// - develop win page modal pop up; can display historical statistics and allow user to share current day's time
 
 // - add a button to remove all tiles from solve grid and add to bank; basically a reset button
 // - add ability for player to move tile from grid directly to bank rather than swapping?
-
-// add some other local storage stats to start working on the 'share' page
 
 // once this basic dummy fiunctionatliy in place, then start hooking up a backend and figuring out how to convert pictures to tiles
 // once that is in place, will need to seed images
 // - also will want a way to figure out how to add more images at a later date; goal should be enough for a year to start
 
 // add spinning wheel or something when loading the play page instead of seeing flash of empty boxes/text
-
-
 
 
 // for way later:
