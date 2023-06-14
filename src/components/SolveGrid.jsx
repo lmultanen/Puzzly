@@ -114,5 +114,3 @@ export default SolveGrid;
 
 // later add-on: could customize grid size somewhat; add in 5x5 or 6x6 setting
 
-// need to refactor storing numbers to tiles...
-// bugs to fix: clicking from grid to tile bank doesn't work
