@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import SolveGrid from "./SolveGrid.jsx";
 import TileBank from "./TileBank.jsx";
+import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } from "../store/slices/imageSlice.js";
 
 const Play = () => {
+    const dispatch = useDispatch();
     // will likely need several useEffects/useStates
     // for one, will want something to check if user has already completed the day's puzzly
     // for starters, will check a bool or something in local storage.
@@ -13,16 +16,11 @@ const Play = () => {
     const [completed, setCompleted] = useState(false);
     // will figure out how best to use/store a completed bool
 
-    // will likely use a useSelector once redux set up to grab this value
-    // may end up just being the index of the image we use in the db
-    const [currentPuzzly, setCurrentPuzzly] = useState(2)
-    // will grab this from localStorage to start if exists; later, could live in user db table
+    const currentPuzzlyNum = useSelector(state => state.image.puzzlyNumber)
+    const totalPuzzlyCount = useSelector(state => state.image.totalPuzzlyCount)
 
     const [remainingTiles, setRemainingTiles] = useState([])
     const [sequencedTiles, setSequencedTiles] = useState([]) // will have a bubble up method from SolveGrid to set this
-
-    // will later need to generate these tiles/grab them from backend to pass to bank
-    const tiles = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 
     const [selectedTile, setSelectedTile] = useState(null)
     const [updateGridValue, setUpdateGridValue] = useState(null)
@@ -31,52 +29,89 @@ const Play = () => {
 
     const [savedGrid,setSavedGrid] = useState(null);
 
-    // will change this to be dynamic
-    const imgUrl = 'https://fastly.picsum.photos/id/907/800/800.jpg?hmac=Hv1yukmtP6G4geXzXbLxU32QY_ef5WfQF8wTd9zXSHw'
-    // const [imgUrl, setImgUrl] = useState('https://fastly.picsum.photos/id/844/400/400.jpg?hmac=_oCcst4n0X6adjyA_hE9zPyLTADwKmYETga4tV-ocQE')
+    const imgUrl = useSelector(state => state.image.imgUrl)
+
+    useEffect(() => {
+        dispatch(fetchCurrentPuzzlyNumber())
+        dispatch(fetchTotalPuzzlyCount())
+    },[])
+
+    useEffect(() => {
+        if (currentPuzzlyNum && totalPuzzlyCount) {
+            // console.log(totalPuzzlyCount)
+            let puzzlyId = (currentPuzzlyNum) % (totalPuzzlyCount)
+            console.log(currentPuzzlyNum, puzzlyId)
+            if (puzzlyId === 0) {
+                puzzlyId = totalPuzzlyCount;
+            }
+            // will later want to change to a modulo of currentNum by totalImageCount
+            dispatch(fetchPuzzlyImageUrl(puzzlyId))
+        }
+    }, [currentPuzzlyNum,totalPuzzlyCount])
 
     useEffect(() => {
         const lastSavedCompleted = Number(window.localStorage.getItem('lastCompletedPuzzly'));
-        
-        if (lastSavedCompleted === currentPuzzly) {
-            setTimer(Number(window.localStorage.getItem('lastCompletedPuzzlyTime')))
-            setCompleted(true)
-            // next step, spawn a pop up modal to allow user's to share time
-            // TODO: make modal page.
-            // - at very least, could redirect to new win page? but woudn't be as slick
 
-            const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
-            setSavedGrid(completedGrid)
-        }
-        else {
-            window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
-            const currentTimer = Number(window.localStorage.getItem('currentPuzzlyTimer'));
-            setTimer(currentTimer);
-
-            const storedGrid = JSON.parse(window.localStorage.getItem('savedPuzzlyGrid'))
-            if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
-                setSavedGrid(storedGrid)
-            } else {
-                setSavedGrid(baseGrid)
-            }        
-            const savedTiles = JSON.parse(window.localStorage.getItem('remainingPuzzlyTiles'))
-            const storedSequence = JSON.parse(window.localStorage.getItem('sequencedPuzzlyTiles')) 
-
-            if (savedTiles?.length + storedSequence?.length === 16) {
-                setRemainingTiles(savedTiles);
-                setSequencedTiles(storedSequence)
-            } 
+        if (imgUrl && currentPuzzlyNum) {
+            if (lastSavedCompleted === currentPuzzlyNum) {
+                setTimer(Number(window.localStorage.getItem('lastCompletedPuzzlyTime')))
+                setCompleted(true)
+                // next step, spawn a pop up modal to allow user's to share time
+                // TODO: make modal page.
+                // - at very least, could redirect to new win page? but woudn't be as slick
+    
+                const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
+                setSavedGrid(completedGrid)
+            }
             else {
-                randomizeTiles();
-            }
+                // need to modify imgUrls... otherwise there's a chance that img not updated
+                // could add the puzzly id num to the tiles when constructed?
+                window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
+                const currentTimer = Number(window.localStorage.getItem('currentPuzzlyTimer'));
+                setTimer(currentTimer);
+                
 
-            // edge case check for when user opens for first time at start of day
-            // checking just for savedTiles 0 length with way storage is set up will throw a false negative
-            if (savedTiles?.length === 0 && storedSequence === 0) {
-                checkWinCondition();
+                const storedGrid = JSON.parse(window.localStorage.getItem('savedPuzzlyGrid'))
+                const savedTiles = JSON.parse(window.localStorage.getItem('remainingPuzzlyTiles'))
+                const storedSequence = JSON.parse(window.localStorage.getItem('sequencedPuzzlyTiles')) 
+
+
+                if (checkSavedTilePuzzlyId(grabSavedTile(storedGrid,savedTiles))) {
+                    if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
+                        setSavedGrid(storedGrid)
+                    } else {
+                        setSavedGrid(baseGrid)
+                    }        
+                    if (savedTiles?.length + storedSequence?.length === 16) {
+                        setRemainingTiles(savedTiles);
+                        setSequencedTiles(storedSequence)
+                    } 
+                    if (savedTiles?.length === 0 && storedSequence === 0) {
+                        checkWinCondition();
+                    }
+                }
+
+                // if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
+                //     setSavedGrid(storedGrid)
+                // } else {
+                //     setSavedGrid(baseGrid)
+                // }        
+                // if (savedTiles?.length + storedSequence?.length === 16) {
+                //     setRemainingTiles(savedTiles);
+                //     setSequencedTiles(storedSequence)
+                // } 
+
+                else {
+                    setTimer(0);
+                    setSavedGrid(baseGrid);
+                    randomizeTiles();
+                }
+    
+                // edge case check for when user opens for first time at start of day
+                // checking just for savedTiles 0 length with way storage is set up will throw a false negative
             }
         }
-    },[])
+    },[currentPuzzlyNum, imgUrl])
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -95,12 +130,32 @@ const Play = () => {
     },[selectedTile])
 
     useEffect(() => {
-        window.localStorage.setItem('remainingPuzzlyTiles',JSON.stringify(remainingTiles))
-        window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify(sequencedTiles))
-        if (remainingTiles.length === 0 && sequencedTiles.length === 16) {
-            checkWinCondition()
+        // console.log('check if overwriting')
+        if (remainingTiles.length + sequencedTiles.length === 16){
+            window.localStorage.setItem('remainingPuzzlyTiles',JSON.stringify(remainingTiles))
+            window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify(sequencedTiles))
+            if (remainingTiles.length === 0 && sequencedTiles.length === 16) {
+                checkWinCondition()
+            }
         }
     }, [remainingTiles.length, sequencedTiles.length, sequencedTiles])
+
+    const grabSavedTile = (grid, tileBank) => {
+        // console.log('in method')
+        // console.log(tileBank)
+        // console.log(grid)
+        if (tileBank.length) {
+            return tileBank[0];
+        }
+        else {
+            return grid.flat().map(tile => tile)[0]
+        }
+    }
+
+    const checkSavedTilePuzzlyId = (tile) => {
+        if (tile?.puzzlyId === currentPuzzlyNum) return true
+        return false
+    }
 
     const randomizeTiles = () => {
         let tileArr = [];
@@ -108,7 +163,8 @@ const Play = () => {
             tileArr.push({
                 id: i,
                 rowId: Math.floor((i-1) / 4),
-                colId: (i-1) % 4
+                colId: (i-1) % 4,
+                puzzlyId: currentPuzzlyNum
             })
         }
         // randomize loop
@@ -140,13 +196,13 @@ const Play = () => {
             setCompleted(true);
             // at later time, will look to update user's db
             // before that, can look to create some new stats as written out in a different component
-            window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzly}`);
+            window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
             window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
             window.localStorage.setItem('currentPuzzlyTimer','0')
             window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
             window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
             window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
-            console.log(`You completed Puzzly ${currentPuzzly} in ${timer} seconds!`)
+            console.log(`You completed Puzzly ${currentPuzzlyNum} in ${timer} seconds!`)
         } else {
             console.log("Hmm... something is out of place. Keep trying!")
         }
@@ -182,14 +238,18 @@ const Play = () => {
     }
 
     return(
-        <div id="playPage">
-            {/* <div className="nav-buffer"/> */}
-            <h2>Puzzly #{currentPuzzly}</h2>
-            <h4>Timer: {timer}s</h4>
-            <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid} savedGrid={savedGrid} completed={completed} imgUrl={imgUrl}/>
-            <br/>
-            <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare} imgUrl={imgUrl}/>
-        </div>
+        // may want to have a value that dictates when ready to render
+        (currentPuzzlyNum && imgUrl) ?
+             <div id="playPage">
+                {/* <div className="nav-buffer"/> */}
+                <h2>Puzzly #{currentPuzzlyNum}</h2>
+                <h4>Timer: {timer}s</h4>
+                <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid} savedGrid={savedGrid} completed={completed} imgUrl={imgUrl}/>
+                <br/>
+                <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare} imgUrl={imgUrl}/>
+            </div>
+            :
+            <></>
     )
 }
 
@@ -198,3 +258,5 @@ export default Play;
 // could add a hint button function later:
 // goal would be to highlight a tile either in the tile bank or that's out of place and show which grid it belongs in
 // - would prioritize tile bank tiles first; if none available, then go to the grid
+// - OR, hint button would just pop up a screen of full image in a modal window
+// - like that idea better

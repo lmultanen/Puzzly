@@ -1,11 +1,10 @@
 const port = process.env.PORT || 3000;
 const app = require('./app');
-// if adding a db, require here
+const { db } = require('./db');
 
-// if db, make async
-const init = () => {
+const init = async () => {
     try {
-        // sync db if using one here
+        await db.sync()
         app.listen(port, () => console.log(`listening on port ${port}`))
     } catch (err) {
         console.log(err);

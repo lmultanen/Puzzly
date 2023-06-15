@@ -6,7 +6,6 @@ const App = () => {
         <>
             <div id="main">
                 <RouteComponent />
-                {/* could add some toasts and stuff here, just for error handling */}
             </div>
         </>
     );

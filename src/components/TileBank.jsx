@@ -16,7 +16,6 @@ const TileBank = ({
     },[selectedTile])
 
     const onClickHandler = (e) => {
-        console.log(e.target.dataset.tileId)
         const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.dataset.tileId)))[0]
         if (!selected) {
             e.target.parentElement.className += " selected";
@@ -47,17 +46,18 @@ const TileBank = ({
         }
     }
 
-    return(
-        <div id="tileBankContainer">
-            <p>Tile Bank:</p>
-            <div id="tileBank">
-                {tiles.length ? tiles.map((tile,idx) => (
-                    <div  className="tileBankTile" key={idx} data-tile-id={tile.id}>
-                        <img style= {{scale: "4",position: "relative", left: `${150 - tile.colId*100}%`, top: `${150 - tile.rowId*100}%`}} data-tile-id={tile.id} onClick={onClickHandler} src={imgUrl}/>
-                    </div>
-                )) : <div>No Tiles Remaining</div>}
+    return(imgUrl ?
+            <div id="tileBankContainer">
+                <p>Tile Bank:</p>
+                <div id="tileBank">
+                    {tiles.length ? tiles.map((tile,idx) => (
+                        <div  className="tileBankTile" key={idx} data-tile-id={tile.id}>
+                            <img style= {{scale: "4",position: "relative", left: `${150 - tile.colId*100}%`, top: `${150 - tile.rowId*100}%`}} data-tile-id={tile.id} onClick={onClickHandler} src={imgUrl}/>
+                        </div>
+                    )) : <div>No Tiles Remaining</div>}
+                </div>
             </div>
-        </div>
+            : <></>
     )
 }
 

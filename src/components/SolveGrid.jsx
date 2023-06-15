@@ -77,6 +77,7 @@ const SolveGrid = ({
                 setSwapCoords(null);
             } else {
                 if(e.target.dataset.tileId != 0) {
+                    // console.log(e.target.dataset.tileId )
                     setSelected({div: e.target, tile: grid[rowId][colId]});
                     bubbleUpSelected({div: e.target, tile: grid[rowId][colId]});
                     setSwapCoords({row: rowId, col: colId});
@@ -85,7 +86,7 @@ const SolveGrid = ({
         }
     } 
 
-    return(
+    return(imgUrl ?
         <div id="solveGrid">
             {grid?.length ? grid.map((row,rowId) => (
                 <div className="solveGridRow" key={rowId}>
@@ -101,6 +102,7 @@ const SolveGrid = ({
                 </div>
             )) : <div>Loading...</div>}
         </div>
+        : <></>
     )
 }
 
