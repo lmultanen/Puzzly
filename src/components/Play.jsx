@@ -31,6 +31,9 @@ const Play = () => {
 
     const [savedGrid,setSavedGrid] = useState(null);
 
+    // will change this to be dynamic
+    const [imgUrl, setImgUrl] = useState('https://fastly.picsum.photos/id/844/400/400.jpg?hmac=_oCcst4n0X6adjyA_hE9zPyLTADwKmYETga4tV-ocQE')
+
     useEffect(() => {
         const lastSavedCompleted = Number(window.localStorage.getItem('lastCompletedPuzzly'));
         
@@ -61,11 +64,9 @@ const Play = () => {
             if (savedTiles?.length + storedSequence?.length === 16) {
                 setRemainingTiles(savedTiles);
                 setSequencedTiles(storedSequence)
-            } else {
-                // generate tiles here
-                // make a method that first generates random tiles between 1-16 (or 0-15)
-                // - then, make those tiles into objects instead; will require a lot of refactoring of existing logic
-                // setRemainingTiles(tiles)
+            } 
+            // this gets triggered during debugging a lot
+            else {
                 randomizeTiles();
             }
 
@@ -106,7 +107,9 @@ const Play = () => {
         for (let i=1; i<=16; i++) {
             tileArr.push({
                 id: i,
-            }) // make into an object later
+                rowId: Math.floor((i-1) / 4),
+                colId: (i-1) % 4
+            })
         }
         // randomize loop
         for (let i=15; i>=0; i--) {
@@ -125,7 +128,6 @@ const Play = () => {
         }
         
         for (let i = 0; i < arr.length -1; i++) {
-            // will need to modify check here; alternatively, can always just pass in tile id so long as they are sequenced appropriately
             if (arr[i] > arr[i+1]) {
                 return false;
             }
@@ -134,8 +136,6 @@ const Play = () => {
     }
 
     const checkWinCondition = () => {
-        // for now, since tiles just ordered by number, will check to see that they are sorted in order
-        // later, will need to update/modify with object/model id or something
         if (checkTilesSequenced()) {
             setCompleted(true);
             // at later time, will look to update user's db
@@ -166,19 +166,17 @@ const Play = () => {
     }   
 
     const removeFromTileBank = (tileToRemove) => {
-        // will need to change this when using img urls, etc.
         const removed = remainingTiles.filter(tile => tile.id != tileToRemove.id)
         setRemainingTiles(removed)
     }
 
     // may need to modify if type changes at all
     const addToTileBank = (tileToAdd, selected) => {
-        // console.log(selected)
         console.log('adding to tile bank')
         console.log(tileToAdd)
         console.log(selected)
         const added = [...remainingTiles, tileToAdd]
-        const filtered = added.filter(tile => tile.id != selected?.div.textContent)
+        const filtered = added.filter(tile => tile.id != selected?.div.dataset.tileId)
         setRemainingTiles(filtered)
     }
 
@@ -188,12 +186,12 @@ const Play = () => {
 
     return(
         <div id="playPage">
-            <div className="nav-buffer"/>
+            {/* <div className="nav-buffer"/> */}
             <h2>Puzzly #{currentPuzzly}</h2>
             <h4>Timer: {timer}s</h4>
-            <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid} savedGrid={savedGrid} completed={completed}/>
+            <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid} savedGrid={savedGrid} completed={completed} imgUrl={imgUrl}/>
             <br/>
-            <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare}/>
+            <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare} imgUrl={imgUrl}/>
         </div>
     )
 }

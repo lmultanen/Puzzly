@@ -8,7 +8,8 @@ const SolveGrid = ({
         updateGridValue,
         bubbleUpGrid,
         savedGrid,
-        completed}) => {
+        completed,
+        imgUrl}) => {
 
     // const baseGrid = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]];
 
@@ -50,24 +51,16 @@ const SolveGrid = ({
     const onClickHandler = (rowId,colId) => (e) => {
         if (!completed){
             if (selected) {
-                if (e.target.textContent) {
+                if (e.target.dataset.tileId != 0) {
                     if (swapCoords) {
-                        // will need to improve this later
-
-                        // NEED TO SWAP ACTUAL TILES HERE
-                        // currently just overwriting values in array; need to reset actual object
                         grid[swapCoords.row][swapCoords.col] = grid[rowId][colId];
                     }
                     else {
-                        // need to get the actual tile here
                         addToTileBank(grid[rowId][colId], selected)
                     }
-                    // e.target.textContent = selected.div.textContent;
                     grid[rowId][colId] = selected.tile;
                 }
                 else {
-                    // e.target.textContent = selected.tile;
-                    // need to figure out how to actually use the row/col
                     grid[rowId][colId] = selected.tile;
                     if (swapCoords) {
                         grid[swapCoords.row][swapCoords.col] = null;
@@ -76,14 +69,14 @@ const SolveGrid = ({
                         removeFromTileBank(selected.tile)
                     }
                 }
-                selected.div.className = selected.div.className.replace('selected','');
+                selected.div.parentElement.className = selected.div.parentElement.className.replace('selected','');
                 bubbleUpSelected(null)
                 grid[rowId][colId] = selected.tile;
                 bubbleUpGrid(grid)
                 setGrid(grid)
                 setSwapCoords(null);
             } else {
-                if(Number(e.target.dataset.tileId)) {
+                if(e.target.dataset.tileId != 0) {
                     setSelected({div: e.target, tile: grid[rowId][colId]});
                     bubbleUpSelected({div: e.target, tile: grid[rowId][colId]});
                     setSwapCoords({row: rowId, col: colId});
@@ -98,8 +91,13 @@ const SolveGrid = ({
                 <div className="solveGridRow" key={rowId}>
                     {row.map((col,colId) => (
                         // may ultimately move this div into separate componenet
-                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId}  onClick={onClickHandler(rowId,colId)} data-tile-id={col?.id ? col.id : 0}>
-                            {col?.id ? col.id : col}
+                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId} data-tile-id={col?.id ? col.id : 0} onClick={onClickHandler(rowId,colId)}>
+                            {col?.id ? 
+                                <img src={imgUrl} data-tile-id={col?.id ? col.id : 0}/> 
+                                // : <div/>
+                                // :<div onClick={onClickHandler(rowId,colId)} data-tile-id={col?.id ? col.id : 0}/>
+                                : ''
+                            }
                         </div>
                     ))}
                 </div>
@@ -112,3 +110,9 @@ export default SolveGrid;
 
 // later add-on: could customize grid size somewhat; add in 5x5 or 6x6 setting
 
+// moving the tags and stuff to divs ruins the clicking; might be able to shift some stuff back?
+// - only happens sometimes... will have to investigate
+// - seems to be related to tile bank width sizing? might be able to fix with fixed width
+// - probably about the parent div; maybe can move classnames back up
+
+// swapping also broken...

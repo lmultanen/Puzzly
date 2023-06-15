@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateGridSquare}) => {
+const TileBank = ({
+        tiles, 
+        selectedTile, 
+        bubbleUpSelected, 
+        addToTileBank, 
+        updateGridSquare, 
+        imgUrl}) => {
 
     const [selected, setSelected] = useState(null)
     // may ultimately want to move this to a redux store; would be easier than passing around stuff
@@ -10,25 +16,27 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
     },[selectedTile])
 
     const onClickHandler = (e) => {
+        console.log(e.target.dataset.tileId)
         const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.dataset.tileId)))[0]
         if (!selected) {
-            e.target.className += " selected";
+            e.target.parentElement.className += " selected";
             setSelected({div: e.target, tile: selectedTile})
             bubbleUpSelected({div: e.target, tile: selectedTile})
         }
         else {
-            selected.div.className = selected.div.className.replace('selected','');
+            selected.div.parentElement.className = selected.div.parentElement.className.replace('selected','');
             const tileIds = tiles.map(tile => tile.id)
 
             if (!tileIds.includes(selected.tile.id)) {
                 // necessary with how I had to refactor this method
+                console.log('adding to tile bank triggered')
                 addToTileBank(selected.tile, {div: e.target})
                 updateGridSquare(selectedTile);
                 setSelected(null);
             }
             else if (tileIds.includes(selected.tile.id) 
                 && selected.tile.id !== Number(e.target.dataset.tileId)) {
-                e.target.className += " selected";
+                e.target.parentElement.className += " selected";
 
                 setSelected({div: e.target, tile: selectedTile});
                 bubbleUpSelected({div: e.target, tile: selectedTile})
@@ -45,8 +53,15 @@ const TileBank = ({tiles, selectedTile, bubbleUpSelected, addToTileBank, updateG
             <p>Tile Bank:</p>
             <div id="tileBank">
                 {tiles.length ? tiles.map((tile,idx) => (
-                    <div className="tileBankTile" key={idx} data-tile-id={tile.id} onClick={onClickHandler}>
-                        {tile.id}
+                    <div  className="tileBankTile" key={idx} data-tile-id={tile.id}>
+                        {/* 
+                        add in tile offsets below somehow
+                        will want it to be based off of dimensions;
+                        ideally, could ensure all images are uniform dimensions at first
+                        or, that's another field that could be read in from image db table
+                        */}
+                        <img data-tile-id={tile.id} onClick={onClickHandler} src={imgUrl}/>
+                        {/* {tile.id} */}
                     </div>
                 )) : <div>No Tiles Remaining</div>}
             </div>

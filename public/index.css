@@ -78,10 +78,7 @@
   justify-content: center;
   align-items: center;
   background-color: #911691;
-  position: fixed;
-  top: 0;
   width: 100%;
-  z-index: 99;
 }
 #navbar a {
   margin: 0.5em;
@@ -128,13 +125,14 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  margin-bottom: 2em;
 }
 .tileBankTile {
   border: 1px black solid;
   border-radius: 10%;
   margin: 0.5em;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   text-align: center;
 }
 .tileBankTile:hover {
@@ -151,8 +149,7 @@
   margin: auto;
   justify-content: center;
   align-items: center;
-  min-width: 60%;
-  max-width: 90%;
+  width: 75%;
   min-height: 150px;
 }
 #tileBankContainer p {
