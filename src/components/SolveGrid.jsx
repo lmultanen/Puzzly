@@ -93,9 +93,7 @@ const SolveGrid = ({
                         // may ultimately move this div into separate componenet
                         <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId} data-tile-id={col?.id ? col.id : 0} onClick={onClickHandler(rowId,colId)}>
                             {col?.id ? 
-                                <img src={imgUrl} data-tile-id={col?.id ? col.id : 0}/> 
-                                // : <div/>
-                                // :<div onClick={onClickHandler(rowId,colId)} data-tile-id={col?.id ? col.id : 0}/>
+                                <img style= {{scale: "4",position: "relative", left: `${150 - col.colId*100}%`, top: `${150 - col.rowId*100}%`}} src={imgUrl} data-tile-id={col?.id ? col.id : 0}/> 
                                 : ''
                             }
                         </div>

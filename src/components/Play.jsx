@@ -32,7 +32,8 @@ const Play = () => {
     const [savedGrid,setSavedGrid] = useState(null);
 
     // will change this to be dynamic
-    const [imgUrl, setImgUrl] = useState('https://fastly.picsum.photos/id/844/400/400.jpg?hmac=_oCcst4n0X6adjyA_hE9zPyLTADwKmYETga4tV-ocQE')
+    const imgUrl = 'https://fastly.picsum.photos/id/907/800/800.jpg?hmac=Hv1yukmtP6G4geXzXbLxU32QY_ef5WfQF8wTd9zXSHw'
+    // const [imgUrl, setImgUrl] = useState('https://fastly.picsum.photos/id/844/400/400.jpg?hmac=_oCcst4n0X6adjyA_hE9zPyLTADwKmYETga4tV-ocQE')
 
     useEffect(() => {
         const lastSavedCompleted = Number(window.localStorage.getItem('lastCompletedPuzzly'));
@@ -65,7 +66,6 @@ const Play = () => {
                 setRemainingTiles(savedTiles);
                 setSequencedTiles(storedSequence)
             } 
-            // this gets triggered during debugging a lot
             else {
                 randomizeTiles();
             }
@@ -172,9 +172,6 @@ const Play = () => {
 
     // may need to modify if type changes at all
     const addToTileBank = (tileToAdd, selected) => {
-        console.log('adding to tile bank')
-        console.log(tileToAdd)
-        console.log(selected)
         const added = [...remainingTiles, tileToAdd]
         const filtered = added.filter(tile => tile.id != selected?.div.dataset.tileId)
         setRemainingTiles(filtered)
@@ -197,3 +194,7 @@ const Play = () => {
 }
 
 export default Play;
+
+// could add a hint button function later:
+// goal would be to highlight a tile either in the tile bank or that's out of place and show which grid it belongs in
+// - would prioritize tile bank tiles first; if none available, then go to the grid

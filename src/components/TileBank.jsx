@@ -29,7 +29,6 @@ const TileBank = ({
 
             if (!tileIds.includes(selected.tile.id)) {
                 // necessary with how I had to refactor this method
-                console.log('adding to tile bank triggered')
                 addToTileBank(selected.tile, {div: e.target})
                 updateGridSquare(selectedTile);
                 setSelected(null);
@@ -54,14 +53,7 @@ const TileBank = ({
             <div id="tileBank">
                 {tiles.length ? tiles.map((tile,idx) => (
                     <div  className="tileBankTile" key={idx} data-tile-id={tile.id}>
-                        {/* 
-                        add in tile offsets below somehow
-                        will want it to be based off of dimensions;
-                        ideally, could ensure all images are uniform dimensions at first
-                        or, that's another field that could be read in from image db table
-                        */}
-                        <img data-tile-id={tile.id} onClick={onClickHandler} src={imgUrl}/>
-                        {/* {tile.id} */}
+                        <img style= {{scale: "4",position: "relative", left: `${150 - tile.colId*100}%`, top: `${150 - tile.rowId*100}%`}} data-tile-id={tile.id} onClick={onClickHandler} src={imgUrl}/>
                     </div>
                 )) : <div>No Tiles Remaining</div>}
             </div>
@@ -73,11 +65,8 @@ export default TileBank;
 
 // TODO: 
 // - after that, can start hooking up some logic to check if player has won
-// --- for actual game, may rely on checking that the object ids are in order or something
-// --- something worth looking into: instead of storing tiles on back end, can i generate them in the Play component?
-// --- for instance, figure out a way to take in the img from backend, then cut it up in the component itself and randomize the tile order?
-// --- might be easier than having to continually store/delete from a dedicated table on backend
-// - add some additional styling
+// --- flesh out user stats more?
+// - add some additional styling; consider making background color slightly less harsh
 // - add some additional local storage stats
 // - develop win page modal pop up; can display historical statistics and allow user to share current day's time
 
