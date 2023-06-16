@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SolveGrid from "./SolveGrid.jsx";
 import TileBank from "./TileBank.jsx";
 import HintModal from "./HintModal.jsx";
+import WinModal from "./WinModal.jsx";
 import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } from "../store/slices/imageSlice.js";
 
 const Play = () => {
@@ -36,6 +37,8 @@ const Play = () => {
     // may need to save a usedHint bool in local storage; will update after completion to current value
     // therefore, will likely need to add to user model
 
+    const [showWinModal, setShowWinModal] = useState(false)
+
     const [readyToRender, setReadyToRender] = useState(false)
 
     useEffect(() => {
@@ -66,6 +69,8 @@ const Play = () => {
     
                 const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
                 setSavedGrid(completedGrid)
+                // setShowWinModal(true)
+                openWinModal()
             }
             else {
                 window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
@@ -198,8 +203,12 @@ const Play = () => {
             // - COULD CHECK TO SEE IF A USER EXISTS IN STATE FIRST
             // save usedHint bool as well
 
+            openWinModal()
+
             console.log(`You completed Puzzly ${currentPuzzlyNum} in ${timer} seconds!`)
         } else {
+
+            // may need another modal or useState here; could either just display a div as well
             console.log("Hmm... something is out of place. Keep trying!")
         }
     }
@@ -207,7 +216,7 @@ const Play = () => {
     // CREATE WIN MODAL HERE
 
     const openWinModal = () => {
-
+        setShowWinModal(true)
     }
 
     const openHintModal = () => {
@@ -249,6 +258,7 @@ const Play = () => {
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
              <div id="playPage">
+                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint}/> : null}
                 {/* <div className="nav-buffer"/> */}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
