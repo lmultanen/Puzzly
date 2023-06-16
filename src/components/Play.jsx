@@ -58,6 +58,10 @@ const Play = () => {
 
     useEffect(() => {
         const lastSavedCompleted = Number(window.localStorage.getItem('lastCompletedPuzzly'));
+        if (window.localStorage.getItem('usedHint') === 'true') {
+            // need to figure out where/when to reset this...
+            setUsedHint(true)
+        }
 
         if (imgUrl && currentPuzzlyNum) {
             if (lastSavedCompleted === currentPuzzlyNum) {
@@ -170,6 +174,8 @@ const Play = () => {
             tileArr[i] = tileArr[j];
             tileArr[j] = temp;
         }
+        window.localStorage.setItem('usedHint','false')
+        setUsedHint(false)
         setRemainingTiles(tileArr);
     }
 
@@ -221,6 +227,8 @@ const Play = () => {
 
     const openHintModal = () => {
         setShowHintModal(true);
+        setUsedHint(true);
+        window.localStorage.setItem('usedHint','true')
     }
 
     const bubbleUpGrid = (arr2d) => {

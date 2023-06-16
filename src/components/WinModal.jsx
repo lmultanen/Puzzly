@@ -10,17 +10,17 @@ const WinModal = ({setShowWinModal, imgUrl, time, puzzlyNumber, usedHint}) => {
         }
     }
     return ReactDom.createPortal(
-        <div className="hintModalContainer" ref={modalRef} onClick={closeModal}>
-            <div id="hintModal">
+        <div className="winModalContainer" ref={modalRef} onClick={closeModal}>
+            <div id="winModal">
                 <button className="closeModal winButton" onClick={() => setShowWinModal(false)}>X</button>
-                <div>
+                <div id="winMessage">
                     {/* could write a conversion method to convert time to minute format */}
                     Congratulations! You completed Puzzly {puzzlyNumber} in {time}{usedHint ? '*' : ''} seconds!
                 </div>
-                {usedHint ? <div>* denotes hint was used. Try solving future Puzzlys without a hint for a bigger challenge!</div> : <br/>}
+                <img id="winModalImg" src={imgUrl}/>
+                {usedHint ? <div id="hintUsedMessage">* denotes hint was used. Try solving future Puzzlys without a hint for a bigger challenge!</div> : <br/>}
                 {/* add in copy functionality here later */}
                 <button className="shareButton" onClick={()=> {}}>Share Time</button>
-                <img id="winModalImg" src={imgUrl}/>
             </div>
         </div>,
         document.getElementById("portal")
