@@ -107,12 +107,3 @@ const SolveGrid = ({
 }
 
 export default SolveGrid;
-
-// later add-on: could customize grid size somewhat; add in 5x5 or 6x6 setting
-
-// moving the tags and stuff to divs ruins the clicking; might be able to shift some stuff back?
-// - only happens sometimes... will have to investigate
-// - seems to be related to tile bank width sizing? might be able to fix with fixed width
-// - probably about the parent div; maybe can move classnames back up
-
-// swapping also broken...

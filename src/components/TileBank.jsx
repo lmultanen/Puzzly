@@ -64,18 +64,35 @@ const TileBank = ({
 export default TileBank;
 
 // TODO: 
+// FIRST PRIORITY:
+// - modal pop-up for when user has completed that day's puzzly; can include option to share their time
+// --- after more stats have been added/stored, can display those as well
+// - add a hint button
+// --- will allow users to see the full picture in a pop-up modal
+// --- if user's use the hint, then should track that in a state and note it when they share their score
+
+// could add some settings in a tab
+// - disable wiggle
+// - dark mode
+// - hard mode (hint disabled)
+
 // - after that, can start hooking up some logic to check if player has won
 // --- flesh out user stats more?
 // - add some additional styling; consider making background color slightly less harsh
-// - add some additional local storage stats
+// - add some additional local storage stats (streak, total puzzly's completed, avg time, etc)
+// --- will need to add some additional logic to the local storage stat keeping
+// --- might be able to get away with having a null User model in redux store
+// --- basically, if null User, then update stats in local storage; else, would save to user's model at later date
 // - develop win page modal pop up; can display historical statistics and allow user to share current day's time
 
 // - add a button to remove all tiles from solve grid and add to bank; basically a reset button
 // - add ability for player to move tile from grid directly to bank rather than swapping?
 
-// once this basic dummy fiunctionatliy in place, then start hooking up a backend and figuring out how to convert pictures to tiles
-// once that is in place, will need to seed images
+// - seed a couple hundred images; try to find good quality ones
 // - also will want a way to figure out how to add more images at a later date; goal should be enough for a year to start
+
+// add a 'hint' button that shows the full image in a pop up
+// - ideally, keep track if user used a hint. if they did, then put an asterisk next to their time when they share/in leaderboard
 
 // add spinning wheel or something when loading the play page instead of seeing flash of empty boxes/text
 

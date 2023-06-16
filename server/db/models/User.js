@@ -42,6 +42,10 @@ const User = db.define('user', {
     },
     avgTime: {
         type: Sequelize.INTEGER
+    },
+    // will just keep track of whether user used a hint for most recent puzzly, for stat display purposes
+    usedHint: {
+        type: Sequelize.BOOLEAN
     }
     // may need further fields later, but these are at least the ones that will be used in localStorage at first
 })

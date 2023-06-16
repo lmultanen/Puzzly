@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SolveGrid from "./SolveGrid.jsx";
 import TileBank from "./TileBank.jsx";
+import HintModal from "./HintModal.jsx";
 import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } from "../store/slices/imageSlice.js";
 
 const Play = () => {
@@ -14,7 +15,6 @@ const Play = () => {
 
     const [timer, setTimer] = useState(0);
     const [completed, setCompleted] = useState(false);
-    // will figure out how best to use/store a completed bool
 
     const currentPuzzlyNum = useSelector(state => state.image.puzzlyNumber)
     const totalPuzzlyCount = useSelector(state => state.image.totalPuzzlyCount)
@@ -31,6 +31,13 @@ const Play = () => {
 
     const imgUrl = useSelector(state => state.image.imgUrl)
 
+    const [showHintModal, setShowHintModal] = useState(null);
+    const [usedHint, setUsedHint] = useState(false);
+    // may need to save a usedHint bool in local storage; will update after completion to current value
+    // therefore, will likely need to add to user model
+
+    const [readyToRender, setReadyToRender] = useState(false)
+
     useEffect(() => {
         dispatch(fetchCurrentPuzzlyNumber())
         dispatch(fetchTotalPuzzlyCount())
@@ -38,13 +45,10 @@ const Play = () => {
 
     useEffect(() => {
         if (currentPuzzlyNum && totalPuzzlyCount) {
-            // console.log(totalPuzzlyCount)
             let puzzlyId = (currentPuzzlyNum) % (totalPuzzlyCount)
-            console.log(currentPuzzlyNum, puzzlyId)
             if (puzzlyId === 0) {
                 puzzlyId = totalPuzzlyCount;
             }
-            // will later want to change to a modulo of currentNum by totalImageCount
             dispatch(fetchPuzzlyImageUrl(puzzlyId))
         }
     }, [currentPuzzlyNum,totalPuzzlyCount])
@@ -64,8 +68,6 @@ const Play = () => {
                 setSavedGrid(completedGrid)
             }
             else {
-                // need to modify imgUrls... otherwise there's a chance that img not updated
-                // could add the puzzly id num to the tiles when constructed?
                 window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
                 const currentTimer = Number(window.localStorage.getItem('currentPuzzlyTimer'));
                 setTimer(currentTimer);
@@ -77,7 +79,8 @@ const Play = () => {
 
 
                 if (checkSavedTilePuzzlyId(grabSavedTile(storedGrid,savedTiles))) {
-                    if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
+                    // if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
+                    if (savedTiles?.length !== 16) {
                         setSavedGrid(storedGrid)
                     } else {
                         setSavedGrid(baseGrid)
@@ -86,30 +89,22 @@ const Play = () => {
                         setRemainingTiles(savedTiles);
                         setSequencedTiles(storedSequence)
                     } 
+                    // edge case check for when user opens for first time at start of day
+                    // checking just for savedTiles 0 length with way storage is set up will throw a false negative
                     if (savedTiles?.length === 0 && storedSequence === 0) {
                         checkWinCondition();
                     }
                 }
-
-                // if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
-                //     setSavedGrid(storedGrid)
-                // } else {
-                //     setSavedGrid(baseGrid)
-                // }        
-                // if (savedTiles?.length + storedSequence?.length === 16) {
-                //     setRemainingTiles(savedTiles);
-                //     setSequencedTiles(storedSequence)
-                // } 
 
                 else {
                     setTimer(0);
                     setSavedGrid(baseGrid);
                     randomizeTiles();
                 }
-    
-                // edge case check for when user opens for first time at start of day
-                // checking just for savedTiles 0 length with way storage is set up will throw a false negative
+
             }
+            // set ready to render here
+            setReadyToRender(true)
         }
     },[currentPuzzlyNum, imgUrl])
 
@@ -130,7 +125,6 @@ const Play = () => {
     },[selectedTile])
 
     useEffect(() => {
-        // console.log('check if overwriting')
         if (remainingTiles.length + sequencedTiles.length === 16){
             window.localStorage.setItem('remainingPuzzlyTiles',JSON.stringify(remainingTiles))
             window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify(sequencedTiles))
@@ -141,9 +135,6 @@ const Play = () => {
     }, [remainingTiles.length, sequencedTiles.length, sequencedTiles])
 
     const grabSavedTile = (grid, tileBank) => {
-        // console.log('in method')
-        // console.log(tileBank)
-        // console.log(grid)
         if (tileBank.length) {
             return tileBank[0];
         }
@@ -202,10 +193,25 @@ const Play = () => {
             window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
             window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
             window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
+            // ADD NEW STATS TO SAVE
+            // ALSO, COULD MAKE A SEPARATE UPDATE STATS METHOD
+            // - COULD CHECK TO SEE IF A USER EXISTS IN STATE FIRST
+            // save usedHint bool as well
+
             console.log(`You completed Puzzly ${currentPuzzlyNum} in ${timer} seconds!`)
         } else {
             console.log("Hmm... something is out of place. Keep trying!")
         }
+    }
+
+    // CREATE WIN MODAL HERE
+
+    const openWinModal = () => {
+
+    }
+
+    const openHintModal = () => {
+        setShowHintModal(true);
     }
 
     const bubbleUpGrid = (arr2d) => {
@@ -239,11 +245,17 @@ const Play = () => {
 
     return(
         // may want to have a value that dictates when ready to render
-        (currentPuzzlyNum && imgUrl) ?
+        // don't render under everything has been set; maybe have a value "readyToRender" that gets set after useEffect runs
+        // - look into how can make sure grid/tilebank also ready to render at same time?
+        readyToRender ?
              <div id="playPage">
                 {/* <div className="nav-buffer"/> */}
-                <h2>Puzzly #{currentPuzzlyNum}</h2>
-                <h4>Timer: {timer}s</h4>
+                <div id="titleHintContainer">
+                    <h2>Puzzly #{currentPuzzlyNum}</h2>
+                    {!completed ? <p id="hint" onClick={openHintModal}>Hint?</p> : null}
+                    {showHintModal ? <HintModal setShowHintModal={setShowHintModal} imgUrl={imgUrl}/> : null}
+                </div>
+                <h4 id="timer">Timer: {timer}s</h4>
                 <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid} savedGrid={savedGrid} completed={completed} imgUrl={imgUrl}/>
                 <br/>
                 <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare} imgUrl={imgUrl}/>
@@ -254,9 +266,3 @@ const Play = () => {
 }
 
 export default Play;
-
-// could add a hint button function later:
-// goal would be to highlight a tile either in the tile bank or that's out of place and show which grid it belongs in
-// - would prioritize tile bank tiles first; if none available, then go to the grid
-// - OR, hint button would just pop up a screen of full image in a modal window
-// - like that idea better
