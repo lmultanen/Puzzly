@@ -27,7 +27,6 @@ router.get('/currentpuzzly', (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
     try {
-        console.log('in id route')
         const image = await Image.findByPk(req.params.id);
         res.send(image)
     } catch (err) {
