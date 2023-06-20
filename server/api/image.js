@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { Image } = require('../db');
+const { isAdmin } = require('./adminMiddleware');
 
 router.get('/', async (req, res, next) => {
     try {
@@ -23,8 +24,6 @@ router.get('/currentpuzzly', (req, res, next) => {
     }
 })
 
-// need a route to get total count
-
 router.get('/:id', async (req, res, next) => {
     try {
         const image = await Image.findByPk(req.params.id);
@@ -33,5 +32,25 @@ router.get('/:id', async (req, res, next) => {
         next(err)
     }
 })
+
+// admin stuff
+router.post('/new', isAdmin, (req, res, next) => {
+    try {
+        // add new puzzly
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.put('/:id', isAdmin, async (req, res, next) => {
+    try {
+        // add ability for admins to update puzzly urls
+        // for instance, could be used for updating ahead of holidays to have specific themed ones
+    } catch (err) {
+        next(err)
+    }
+})
+
+
 
 module.exports = router
