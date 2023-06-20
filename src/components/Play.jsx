@@ -5,6 +5,7 @@ import TileBank from "./TileBank.jsx";
 import HintModal from "./HintModal.jsx";
 import WinModal from "./WinModal.jsx";
 import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } from "../store/slices/imageSlice.js";
+import Toastify from 'toastify-js'
 
 const Play = () => {
     const dispatch = useDispatch();
@@ -259,10 +260,8 @@ const Play = () => {
             openWinModal()
         } else {
             if (!errorPopup) {
-                alert("Hmm... something is out of place. Keep trying!")
-                // could make a modal or style the alert window further
-                // or, could make an error toast popup; might be better option
                 setErrorPopup(true)
+                Toastify({text: "Hmm... something is out of place. Keep trying!", duration:2500 ,gravity: "bottom", position: "left", backgroundColor: "red"}).showToast();
             }
         }
     }

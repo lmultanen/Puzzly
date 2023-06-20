@@ -6,6 +6,7 @@ const App = () => {
         <>
             <div id="main">
                 <RouteComponent />
+                {/* icon={false} */}
             </div>
         </>
     );

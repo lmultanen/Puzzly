@@ -40,6 +40,7 @@ const WinModal = ({
         navigator.clipboard.writeText(`Completed${usedHint ? '*' : ''} Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}!\n(add emoji or something)\nFollow link to try: puzzly.us`);
         // alert("Copied to clipboard")
         // could have a toast popup instead?
+        Toastify({text: "Copied to clipboard!", duration:1000 ,gravity: "bottom", position: "right", backgroundColor: "dodgerBlue"}).showToast();
     }
 
     return ReactDom.createPortal(
