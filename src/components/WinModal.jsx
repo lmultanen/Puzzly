@@ -2,7 +2,15 @@ import React, { useRef } from "react";
 import ReactDom from "react-dom";
 
 // could also just pass in an object with user stats/time/hintUsed
-const WinModal = ({setShowWinModal, imgUrl, time, puzzlyNumber, usedHint}) => {
+const WinModal = ({
+        setShowWinModal, 
+        imgUrl, 
+        time, 
+        puzzlyNumber, 
+        usedHint,
+        completedPuzzlys,
+        averageTime,
+        streak}) => {
     const modalRef = useRef();
     const closeModal = (e) => {
         if (e.target === modalRef.current) {
@@ -18,7 +26,7 @@ const WinModal = ({setShowWinModal, imgUrl, time, puzzlyNumber, usedHint}) => {
         const hours = Math.floor(timeInSeconds / 3600);
         timeInSeconds = timeInSeconds - (3600 * hours);
         const mins = Math.floor(timeInSeconds / 60);
-        const seconds = timeInSeconds - (60 * mins);
+        const seconds = Math.floor(timeInSeconds - (60 * mins));
         const minsAndSecs = str_pad_left(mins,'0',2) + ':' + str_pad_left(seconds,'0',2);
         if (hours) {
             return str_pad_left(hours,'0',2) + ':' + minsAndSecs;
@@ -55,9 +63,9 @@ const WinModal = ({setShowWinModal, imgUrl, time, puzzlyNumber, usedHint}) => {
                     </thead>
                     <tbody>
                         <tr id="statsValues">
-                            <td>3</td>
-                            <td>1</td>
-                            <td>01:29</td>
+                            <td>{completedPuzzlys}</td>
+                            <td>{streak ? streak : 1}</td>
+                            <td>{convertSecsToMins(averageTime)}</td>
                         </tr>
                     </tbody>
                     {/* if save log of all times, could show a barchart as well later */}

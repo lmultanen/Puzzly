@@ -8,11 +8,6 @@ import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } 
 
 const Play = () => {
     const dispatch = useDispatch();
-    // will likely need several useEffects/useStates
-    // for one, will want something to check if user has already completed the day's puzzly
-    // for starters, will check a bool or something in local storage.
-    // if not completed and saved time is 0, then start incremmenting from 0. otherwise, will pick up timer from saved value
-    // if completed, pop up a module or something giving user option to share time
 
     const [timer, setTimer] = useState(0);
     const [completed, setCompleted] = useState(false);
@@ -34,12 +29,19 @@ const Play = () => {
 
     const [showHintModal, setShowHintModal] = useState(null);
     const [usedHint, setUsedHint] = useState(false);
-    // may need to save a usedHint bool in local storage; will update after completion to current value
-    // therefore, will likely need to add to user model
 
-    const [showWinModal, setShowWinModal] = useState(false)
+    const [showWinModal, setShowWinModal] = useState(false);
 
-    const [readyToRender, setReadyToRender] = useState(false)
+    const [readyToRender, setReadyToRender] = useState(false);
+
+    // will need to set this with a user 'get puzzly history' if user logged in later
+    // - will also have a 'save puzzly history' for new users who log in with a local history
+    // - after that, should reset the saved history
+    const [puzzlyHistory, setPuzzlyHistory] = useState([]);
+    const [averageTime, setAverageTime] = useState(null);
+    const [streak, setStreak] = useState(null);
+
+    const [errorPopup, setErrorPopup] = useState(false)
 
     useEffect(() => {
         dispatch(fetchCurrentPuzzlyNumber())
@@ -58,8 +60,16 @@ const Play = () => {
 
     useEffect(() => {
         const lastSavedCompleted = Number(window.localStorage.getItem('lastCompletedPuzzly'));
+        const localPuzzlyHistory = JSON.parse((window.localStorage.getItem('puzzlyHistory')));
+        const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
+        const savedPuzzlyStreak = Number(window.localStorage.getItem('puzzlyStreak'));
+        setStreak(savedPuzzlyStreak)
+        if (localPuzzlyHistory) {
+            setPuzzlyHistory(localPuzzlyHistory)
+            setAverageTime(savedAverageTime)
+        }
+
         if (window.localStorage.getItem('usedHint') === 'true') {
-            // need to figure out where/when to reset this...
             setUsedHint(true)
         }
 
@@ -67,13 +77,17 @@ const Play = () => {
             if (lastSavedCompleted === currentPuzzlyNum) {
                 setTimer(Number(window.localStorage.getItem('lastCompletedPuzzlyTime')))
                 setCompleted(true)
-                // next step, spawn a pop up modal to allow user's to share time
-                // TODO: make modal page.
-                // - at very least, could redirect to new win page? but woudn't be as slick
     
                 const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
+                // also load stats here
+
+                const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
+                const savedPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
+                setAverageTime(savedAverageTime);
+                setPuzzlyHistory(savedPuzzlyHistory)
+                
+
                 setSavedGrid(completedGrid)
-                // setShowWinModal(true)
                 openWinModal()
             }
             else {
@@ -88,7 +102,6 @@ const Play = () => {
 
 
                 if (checkSavedTilePuzzlyId(grabSavedTile(storedGrid,savedTiles))) {
-                    // if (storedGrid?.length === 4 && storedGrid[0].length === 4) {
                     if (savedTiles?.length !== 16) {
                         setSavedGrid(storedGrid)
                     } else {
@@ -112,7 +125,6 @@ const Play = () => {
                 }
 
             }
-            // set ready to render here
             setReadyToRender(true)
         }
     },[currentPuzzlyNum, imgUrl])
@@ -193,34 +205,67 @@ const Play = () => {
         return true;
     }
 
+    const updateStats = () => {
+        if (!puzzlyHistory.filter(puzzly => puzzly.puzzly === currentPuzzlyNum).length){
+            // might only do this if no user logged in. If user, then invoke different method to create new table entry for UserTime table
+            const historyLength = puzzlyHistory.length;
+            const updatedPuzzlyHistory = [...puzzlyHistory, {puzzly: currentPuzzlyNum, time: timer}]
+            setPuzzlyHistory(updatedPuzzlyHistory);
+            window.localStorage.setItem('puzzlyHistory', JSON.stringify(updatedPuzzlyHistory));
+
+            if (historyLength) {
+                let newAverage = Math.floor(((averageTime * historyLength) + timer) / (historyLength + 1));
+                window.localStorage.setItem('averagePuzzlyTime', newAverage);
+                setAverageTime(newAverage);
+            }
+            else {
+                window.localStorage.setItem('averagePuzzlyTime', timer)
+                setAverageTime(timer)
+            }
+
+            if (puzzlyHistory.filter(puzzly => puzzly.puzzly === (currentPuzzlyNum-1)).length) {
+                window.localStorage.setItem('puzzlyStreak', `${streak+1}`)
+                setStreak(streak + 1);
+            }
+            else {
+                setStreak(1);
+                window.localStorage.setItem('puzzlyStreak','1');
+            }
+        }
+        // also want a streak stat...
+        // might be a little more complicated to calulate
+        // can filter and check if puzzlyHistory contains previous puzzly number
+        // - if yes, increment streak
+        // - else, set streak to 1
+    }
+
     const checkWinCondition = () => {
         if (checkTilesSequenced()) {
             setCompleted(true);
             // at later time, will look to update user's db
             // before that, can look to create some new stats as written out in a different component
+
+            updateStats();
+
             window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
             window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
             window.localStorage.setItem('currentPuzzlyTimer','0')
             window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
             window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
             window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
-            // ADD NEW STATS TO SAVE
-            // ALSO, COULD MAKE A SEPARATE UPDATE STATS METHOD
+
             // - COULD CHECK TO SEE IF A USER EXISTS IN STATE FIRST
-            // save usedHint bool as well
 
             openWinModal()
-
-            console.log(`You completed Puzzly ${currentPuzzlyNum} in ${timer} seconds!`)
         } else {
-
-            // may need another modal or useState here; could either just display a div as well
-            console.log("Hmm... something is out of place. Keep trying!")
+            if (!errorPopup) {
+                alert("Hmm... something is out of place. Keep trying!")
+                // could make a modal or style the alert window further
+                // or, could make an error toast popup; might be better option
+                setErrorPopup(true)
+            }
         }
     }
-
-    // CREATE WIN MODAL HERE
-
     const openWinModal = () => {
         setShowWinModal(true)
     }
@@ -261,13 +306,10 @@ const Play = () => {
     }
 
     return(
-        // may want to have a value that dictates when ready to render
-        // don't render under everything has been set; maybe have a value "readyToRender" that gets set after useEffect runs
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
              <div id="playPage">
-                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint}/> : null}
-                {/* <div className="nav-buffer"/> */}
+                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={puzzlyHistory.length} averageTime={averageTime} streak={streak}/> : null}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
                     {!completed ? <p id="hint" onClick={openHintModal}>Hint?</p> : null}
