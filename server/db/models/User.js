@@ -89,8 +89,7 @@ User.prototype.generateToken = function () {
 User.byToken = async (token) => {
     try {
       jwt.verify(token, jwtStr);
-      const user = await User.findByPk(jwt.decode(token).userId, {
-      });
+      const user = await User.findByPk(jwt.decode(token).id);
       if (user) {
         return user;
       }

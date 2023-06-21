@@ -35,6 +35,13 @@ const Play = () => {
 
     const [readyToRender, setReadyToRender] = useState(false);
 
+
+    // ADD IN SOME USER STATES
+    // WILL MAINLY BE FOR STAT KEEPING PURPOSES
+    // WILL NEED TO CREATE NEW THUNKS AFTER
+    // - thunk for saving current puzzly stat
+    // - thunk for adding localStorage stats to user profile
+
     // will need to set this with a user 'get puzzly history' if user logged in later
     // - will also have a 'save puzzly history' for new users who log in with a local history
     // - after that, should reset the saved history

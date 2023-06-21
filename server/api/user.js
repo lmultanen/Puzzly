@@ -4,6 +4,19 @@ const { User } = require('../db');
 const { isAdmin } = require('./adminMiddleware');
 
 //User account routes
+router.get('/account', async (req, res, next) => {
+    try {
+        console.log('in account route')
+        const token = req.headers.authorization;
+        console.log(token)
+        const user = await User.byToken(token)
+        console.log(user)
+        res.send(user)
+    } catch (err) {
+        next(err)
+    }
+})
+
 router.post('/login', async (req, res, next) => {
     try {
       const { username, password } = req.body;
@@ -23,7 +36,9 @@ router.post('/signup', async (req, res, next) => {
         username,
         password
       });
-      res.send({ token: await user.generateToken() });
+    //   console.log(user)
+      const token = await user.generateToken()
+      res.send({token});
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         res.status(401).send('User already exists');
