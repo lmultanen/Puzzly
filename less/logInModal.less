@@ -1,0 +1,36 @@
+#portal .logInModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+  }
+#logInModal {
+    z-index: 1;
+    width: 350px;
+    height: 350px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    position: relative;
+    animation: animate 0.3s;
+    overflow: hidden;
+  }
+
+  .logInLink {
+    color: blue;
+    margin-left: .25em;
+    margin-right: .25em;
+  }
+  .logInLink:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
