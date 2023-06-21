@@ -6,7 +6,7 @@ import HintModal from "./HintModal.jsx";
 import WinModal from "./WinModal.jsx";
 import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } from "../store/slices/imageSlice.js";
 import Toastify from 'toastify-js'
-import { addCurrentPuzzlyResult, fetchUser, isLoggedStatus } from "../store/slices/userSlice.js";
+import { addCurrentPuzzlyResult, addLocalPuzzlyResults, fetchUser, isLoggedStatus } from "../store/slices/userSlice.js";
 
 const Play = () => {
     const dispatch = useDispatch();
@@ -49,6 +49,12 @@ const Play = () => {
     // will need to set this with a user 'get puzzly history' if user logged in later
     // - will also have a 'save puzzly history' for new users who log in with a local history
     // - after that, should reset the saved history
+
+    // NEED TO ADDRESS THE LOADING A BIT BETTER
+    // LOADS APPROPRIATELY ON BACK END, BUT NEED TO CLEAN UP FRONT END STUFF
+    // COULD BE A MATTER OF MAKING SURE THAT CALL THE DISPATCH IN ANOTHER SPOT
+
+    // SOMETHING ELSE TO CONSIDER; MAY NEED TO UPDATE THE LOCAL STORAGE STATS EVEN WHEN USER COMPLETES THE PUZZLY
     const [puzzlyHistory, setPuzzlyHistory] = useState([]);
     const [averageTime, setAverageTime] = useState(null);
     const [streak, setStreak] = useState(null);
@@ -63,6 +69,12 @@ const Play = () => {
         dispatch(fetchCurrentPuzzlyNumber())
         dispatch(fetchTotalPuzzlyCount())
     },[])
+
+    useEffect(() => {
+        if (loggedIn && puzzlyHistory.length) {
+            addSavedStatsToUser()
+        }
+    },[loggedIn, puzzlyHistory.length])
 
     useEffect(() => {
         if (currentPuzzlyNum && totalPuzzlyCount) {
@@ -108,6 +120,15 @@ const Play = () => {
                     // unsure how to set puzzly history or if need to here...
                     // don't think need to, just needed the amount of completed in a row
                     setSavedGrid(completedGrid)
+                    openWinModal()
+                }
+                else if (currentPuzzlyNum === lastSavedCompleted) {
+                    dispatch(addLocalPuzzlyResults())
+                    setTimer(user.lastTime)
+                    setCompleted(true)
+                    setAverageTime(user.avgTime)
+                    setStreak(user.completedStreak)
+                    setSavedGrid(JSON.parse(window.localStorage.getItem('completedPuzzlyGrid')))
                     openWinModal()
                 }
                 else {
@@ -276,33 +297,49 @@ const Play = () => {
         return true;
     }
 
+    const addSavedStatsToUser = () => {
+        if (puzzlyHistory.length) {
+            dispatch(addLocalPuzzlyResults({
+                results: {
+                    userId: user.id,
+                    history: puzzlyHistory
+                }
+            }))
+
+            // CAN CLEAR PUZZLY HISTORY HERE
+            // ALSO, ADD A CALCULATE STREAK METHOD TO USER MODEL
+            // ONLY WILL RUN AFTER LOADING FROM LOCAL STORAGE
+            // 
+        }
+    }
+
     const updateStats = () => {
         if (loggedIn) {
-            // update user stats here; will likely just require a new thunk
-            // - hopefully is that easy
 
-            // ALSO, FIGURE OUT WHERE TO LOAD LOCAL STATS
-            // MIGHT HAVE TO BE IN THE LOG IN MODAL OR LEADERBOARD COMPONENET, SINCE THATS WHERE LOG IN OCCURS
-            // may need to refactor the user model methods somewhat;
-            // -- might be easier to just do a check on every add and just loop through here, instead of looping through on backend
-
-            // mahy need to update User method to add current puzzly stats to double check that doesn't currently exist
-            // could also just have a method here that checks if puzzlyHistory.length and userLogged in
-            // - load stats there
-
-            // also, may just have a useSelector for user in the winModal? might be simpler
             if (user.lastCompleted !== currentPuzzlyNum) {
                 // make a thunk and pass in all relevant info, such as puzzly number, time, usedHint, etc
-                 dispatch(addCurrentPuzzlyResult({
+                dispatch(addCurrentPuzzlyResult({
                     result: {
                         userId: user.id,
                         puzzlyNumber: currentPuzzlyNum,
                         time: timer,
                         usedHint
                     }
-                 }));
+                }));
 
                 //  may think about clearing other stats here? tbd
+                window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
+                window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
+                window.localStorage.setItem('currentPuzzlyTimer','0')
+                // window.localStorage
+                window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
+                window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
+                window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
+
+                // maybe could just load here, if see puzzlyHistory.length?
+                // that way, can make sure to reset puzzlyHistory
+                // then, maybe just set streak to 1?
+                // addSavedStatsToUser();
             }
         }
         else {
@@ -332,6 +369,12 @@ const Play = () => {
                     window.localStorage.setItem('puzzlyStreak','1');
                 }
             }
+            window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
+            window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
+            window.localStorage.setItem('currentPuzzlyTimer','0')
+            window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
+            window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
+            window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
         }
     }
 
@@ -343,12 +386,12 @@ const Play = () => {
 
             updateStats();
 
-            window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
-            window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
-            window.localStorage.setItem('currentPuzzlyTimer','0')
-            window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
-            window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
-            window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
+            // window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
+            // window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
+            // window.localStorage.setItem('currentPuzzlyTimer','0')
+            // window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
+            // window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
+            // window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
 
             // - COULD CHECK TO SEE IF A USER EXISTS IN STATE FIRST
 

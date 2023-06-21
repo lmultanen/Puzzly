@@ -16,6 +16,7 @@ const UserResult = db.define('userResult', {
     },
     usedHint: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false
     }
 })
 

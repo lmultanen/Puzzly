@@ -57,6 +57,19 @@ router.post('/addcurrentresult', async (req, res, next) => {
     }
 })
 
+router.post('/addlocalresults', async (req, res, next) => {
+    try {
+        const { results } = req.body
+        console.log(results)
+        const user = await User.findByPk(results.userId);
+        const updated = await user.loadLocalStorageResults(results.history)
+        
+        res.send({success: 'success'})
+    } catch (error) {
+        next(error)
+    }
+})
+
 router.get('/leaderboard', async (req, res, next) => {
     try {
         // will need to hook up appropriate params in userSlice.js

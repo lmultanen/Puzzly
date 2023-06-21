@@ -147,23 +147,29 @@ User.authenticate = async ({ username, password }) => {
 // could add a variable with currentPuzzlyNumber? could then update other fields like currenttime, etc, hintUsed
 // or, just will send an object with all variables to update later in front end
 // or, will create separate addCurrentResult method and just use this one for loading local storage results
-User.prototype.addResult = async (puzzlyNumber, time) => {
+User.prototype.addResult = async function (puzzlyNumber, time, usedHint) {
     // may want to first check that User doesn't already have a result for this puzzlyNumber
-    await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, userId: this.id})
+    await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, userId: this.id, usedHint: usedHint})
     this.completed += 1;
-    await this.update();
+    if (puzzlyNumber > this.lastCompleted) {
+        this.lastCompleted = puzzlyNumber
+    }
+    let newAvgTime = Math.floor((this.avgTime*this.completed + time) / (this.completed + 1))
+    this.avgTime = newAvgTime
+
+    await this.save();
 }
 
-User.prototype.loadLocalStorageResults = async (localResults) => {
+User.prototype.loadLocalStorageResults = async function (localResults) {
     const results = await this.getResultHistory();
     for (let localResult of localResults) {
-        if (!results.filter(result => result.puzzlyNumber === localResult.puzzlyNumber).length) {
-            this.addResult(localResult.puzzlyNumber, localResult.time)
+        if (!results.filter(result => result.puzzlyNumber === localResult.puzzly).length) {
+            this.addResult(localResult.puzzly, localResult.time, localResult.usedHint ? true : false)
         }
     }
 }
 
-User.prototype.getResultHistory = async () => {
+User.prototype.getResultHistory = async function () {
     const resultHistory = await UserResult.findAll({
         where: {
             userId: this.id
@@ -173,18 +179,6 @@ User.prototype.getResultHistory = async () => {
 }
 
 User.prototype.updateCurrentStreak = async function (currentPuzzlyNum) {
-    // const results = await this.getResultHistory();
-    // // could also just try to search for a userResult with puzzlyNumber (currentPuzzlyNum-1) with userId
-    // // - could reduce potential latency issues down the road
-    // if (results.filter(result => result.puzzlyNumber === currentPuzzlyNum-1).length) {
-    //     this.completedStreak += 1;
-    // }
-    // else {
-    //     this.completedStreak = 1;
-    // }
-    // await this.update();
-    // console.log(lastCompleted, currentPuzzlyNum)
-    // console.log('will break here')
     if (this.lastCompleted === currentPuzzlyNum - 1) {
         this.completedStreak += 1;
     }
@@ -196,7 +190,6 @@ User.prototype.updateCurrentStreak = async function (currentPuzzlyNum) {
 }
 
 User.prototype.addCurrentResult = async function (puzzlyNumber, time, usedHint) {
-    // const user = await User.findByPk(id)
     await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, usedHint: usedHint, userId: this.id})
     let newAvgTime = Math.floor((this.avgTime*this.completed + time) / (this.completed + 1))
     this.avgTime = newAvgTime
