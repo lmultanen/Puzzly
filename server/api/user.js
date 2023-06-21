@@ -6,11 +6,8 @@ const { isAdmin } = require('./adminMiddleware');
 //User account routes
 router.get('/account', async (req, res, next) => {
     try {
-        console.log('in account route')
         const token = req.headers.authorization;
-        console.log(token)
         const user = await User.byToken(token)
-        console.log(user)
         res.send(user)
     } catch (err) {
         next(err)
@@ -21,8 +18,9 @@ router.post('/login', async (req, res, next) => {
     try {
       const { username, password } = req.body;
       const userData = { username: username, password: password };
-      let user = await User.authenticate(userData);
-      res.send({ token: await user.generateToken() });
+      const user = await User.authenticate(userData);
+      const token = await user.generateToken();
+      res.send({ token });
     } catch (error) {
       next(error);
     }
@@ -36,7 +34,6 @@ router.post('/signup', async (req, res, next) => {
         username,
         password
       });
-    //   console.log(user)
       const token = await user.generateToken()
       res.send({token});
     } catch (error) {

@@ -89,7 +89,14 @@ User.prototype.generateToken = function () {
 User.byToken = async (token) => {
     try {
       jwt.verify(token, jwtStr);
-      const user = await User.findByPk(jwt.decode(token).id);
+      const user = await User.findByPk(
+        jwt.decode(token).id,
+        {
+            attributes: {
+                exclude: ["password"]
+            }
+        }
+      );
       if (user) {
         return user;
       }
@@ -125,13 +132,16 @@ User.authenticate = async ({ username, password }) => {
         username,
       },
     });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      var temp = jwt.sign({ userId: user.id }, jwtStr);
-      return temp;
+    if (!user) {
+        const error = Error(' Invalid Username ');
+        error.status = 401;
+        throw error;
+    } else if (!(await bcrypt.compare(password, user.password))) {
+        const error = Error('Incorrect password');
+        error.status = 401;
+        throw error;
     }
-    const error = Error('bad credentials');
-    error.status = 401;
-    throw error;
+    return user;
 };
 
 // could add a variable with currentPuzzlyNumber? could then update other fields like currenttime, etc, hintUsed

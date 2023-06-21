@@ -12,7 +12,7 @@ export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
 });
 
 export const loginUser = createAsyncThunk(
-	'user/loginUser',
+	'user/login',
 	async ({ login }, { rejectWithValue }) => {
 		try {
 			const { data } = await axios.post('/api/user/login', login);
@@ -46,6 +46,7 @@ export const validateSignupForm = createAsyncThunk(
 
 const initialState = {
 	userInfo: {},
+    status: 'idle',
 	isLoggedIn: false,
 	isAdmin: false,
 	error: null,
@@ -60,10 +61,13 @@ const userSlice = createSlice({
 		logout: (state) => {
 			window.localStorage.removeItem('puzzlyToken');
 			state.userInfo = {};
-			state.isLogged = false;
+			state.isLoggedIn = false;
 			state.isAdmin = false;
 			state.token = false;
-		}
+		},
+        setError: (state) => {
+			state.error = null;
+		},
 	},
     extraReducers(builder) {
         builder
@@ -73,15 +77,27 @@ const userSlice = createSlice({
                 window.localStorage.setItem('puzzlyToken',action.payload.token)
                 state.token = action.payload.token
             })
+            .addCase(createUser.rejected, (state, action) => {
+				state.status = 'failed';
+				state.error = action.error;
+			})
             .addCase(fetchUser.fulfilled, (state, action) => {
 				state.userInfo = action.payload;
 				state.isLoggedIn = action.payload ? true : false;
 				state.token = localStorage.getItem('puzzlyToken');
 				state.isAdmin = action.payload ? action.payload.isAdmin : false;
 			})
+            .addCase(fetchUser.rejected, (state, action) => {
+				state.status = 'failed';
+				state.error = action.error;
+			})
             .addCase(loginUser.fulfilled, (state, action) => {
 				state.token = action.payload.token;
 				localStorage.setItem('puzzlyToken', state.token);
+			})
+            .addCase(loginUser.rejected, (state, action) => {
+				state.status = 'failed';
+				state.error = action.payload;
 			})
             .addCase(validateSignupForm.fulfilled, (state, action) => {
 				state.status = 'succeeded';
@@ -94,7 +110,8 @@ const userSlice = createSlice({
 export const isLoggedStatus = (state) => state.user.isLogged;
 export const getUserToken = (state) => state.user.token;
 export const getFormInputAvailable = (state) => state.user.formInputAvailable;
+export const getError = (state) => state.user.error;
 
-export const { logout } = userSlice.actions;
+export const { logout, setError } = userSlice.actions;
 
 export default userSlice.reducer;

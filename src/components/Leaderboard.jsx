@@ -1,9 +1,10 @@
 import  React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentPuzzlyNumber } from "../store/slices/imageSlice.js";
-import { fetchUser } from "../store/slices/userSlice.js";
+import { fetchUser, logout } from "../store/slices/userSlice.js";
 import LogInModal from "./LogInModal.jsx";
 import SignUpModal from "./SignUpModal.jsx";
+import Toastify from 'toastify-js';
 
 const Leaderboard = () => {
     const dispatch = useDispatch();
@@ -15,6 +16,8 @@ const Leaderboard = () => {
 
     const userState = useSelector(state => state.user)
 
+    // add in some toast pop ups for logging in, logging out, etc
+
     useEffect(() => {
         const token = window.localStorage.getItem('puzzlyToken');
         if (token) {
@@ -25,6 +28,7 @@ const Leaderboard = () => {
 
     useEffect(() => {
         setReadyToRender(true)
+        // may also want to wait for userState useSelector to return before this
     },[currentPuzzlyNum])
 
     const openLogInModal = () => {
@@ -33,6 +37,12 @@ const Leaderboard = () => {
 
     const openSignUpModal = () => {
         setShowSignUpModal(true)
+    }
+
+    const logoutHandler = () => {
+        Toastify({text: `Successfully logged out ${userState.userInfo.username}!`, duration:2000 ,gravity: "bottom", position: "center", backgroundColor: "dodgerBlue"}).showToast();
+        dispatch(logout())
+        // likely some other cleanup once having a friends list state
     }
 
     return(
@@ -83,7 +93,32 @@ const Leaderboard = () => {
                 </div>
             </div>
             :
-            <div>Leaderboard here</div>
+            <div className="leaderboard">
+                <div id="leaderboardHeaderRow">
+                    <div className="leaderboardHeader">Pos</div>
+                    <div className="leaderboardHeader">Name</div>
+                    <div className="leaderboardHeader">Time</div>
+                </div>
+                {/* update this to be dynamic later */}
+                {/* will change font-style/size based on if completed or not */}
+                <div className="leaderboardRow">
+                    <div className="leaderboardPlace">{userState.userInfo.lastComplete === currentPuzzlyNum ? "1" : "*"}</div>
+                    <div className="leaderboardName">{`${userState.userInfo.username}(you)`}</div>
+                    <div className="leaderboardTime">{userState.userInfo.lastComplete === currentPuzzlyNum ? userState.userInfo.lastCompleted : "----"}</div>
+                </div>
+
+                <button id="friendsListButton" type="click" onClick={()=>console.log('hook up modal later!')}>
+                    Friends List
+                    {/* will probably make a button */}
+                    {/* spawn new modal to view friends list and have ability to add more */}
+                </button>
+
+                <br/>
+                {/* look for a nice log out icon, like exiting door */}
+                <button id="logOutButton" type="click" onClick={logoutHandler}>
+                    Log Out
+                </button>
+            </div>
             }
         </div>
         : <></>

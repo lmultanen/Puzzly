@@ -1,7 +1,7 @@
 import  React, { useRef, useState, useEffect }  from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import ReactDom from "react-dom";
-import { createUser, fetchUser, getFormInputAvailable, validateSignupForm } from "../store/slices/userSlice";
+import { createUser, fetchUser, getError, setError, getFormInputAvailable, validateSignupForm } from "../store/slices/userSlice";
 
 const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
     const dispatch = useDispatch();
@@ -13,16 +13,26 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
     const validate = useSelector(getFormInputAvailable);
 
     const token = useSelector(state => state.user.token)
+    const loginError = useSelector(getError)
     
     useEffect(() => {}, [validate]);
 
     useEffect(() => {
-        console.log(token)
+        if (loginError) {
+            Toastify({text: "Error creating account, please try again.", duration:2000 ,gravity: "bottom", position: "center", backgroundColor: "red"}).showToast();
+            dispatch(setError())
+        }
+    }, [loginError])
+
+    useEffect(() => {
         if (token) {
             dispatch(fetchUser())
+            Toastify({text: `Account created! Welcome, ${signUp.username}!`, duration:2000 ,gravity: "bottom", position: "center", backgroundColor: "dodgerBlue"}).showToast();
             setShowSignUpModal(false)
         }
     },[token])
+
+    // MAYBE MAKE SIGN UP FORM A BIT LARGER IN CSS
 
     const handleChange = (prop) => (event) => {
 		const password = document.querySelector('input[name=password]');
@@ -43,6 +53,13 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
 		// }
 	};
 
+    // FIGURE OUT SOME BETTER VALIDATION
+    // CAN MAKE PASSWORD VALIDATION FRONT END AND JUST USE AS A SPAN
+    // HOOK UP THE BACKEND VALIDATOR BETTER
+    // - COULD HAVE A CHECK USER CHARS FOR FRONT END
+    // - COULD HAVE A CHECK PASSWORDS FOR FRONT END
+
+
     const disableButton = () => {
         return !(
             (signUp.password === signUp.confirmPassword) &&
@@ -62,13 +79,6 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
         // if successful, close modal
         // if not successful, then send toast that unsuccessful
 		// dispatch(createUser({ signUp })) && navigate('/login');
-	};
-
-    const handleLogin = () => {
-		// navigate('/login');
-        // 
-        // IF SUCCESSFUL, THEN POP UP A TOAST AND CLOSE THE TAB
-        setShowSignUpModal(false)
 	};
     
     const modalRef = useRef();
@@ -94,8 +104,8 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                 <div>Password:</div>
                 <div>Verify Password:</div> */}
                 <div className="signUpContainer">
-                    <h2>Sign Up</h2>
-                    <p>Input Username and Password to create account.</p>
+                    <h2>Sign Up Form</h2>
+                    <p style={{fontStyle: "italic"}}>Input Username and Password to create account.</p>
                     <br/>
                     <form onSubmit={handleSubmit} autoComplete="on">
                         <div className="formBox">
@@ -118,7 +128,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                                 Password:
                             </label>
                             <div className="formInput">
-                                <input type="Password" name="password" placeholder="Password" className="textBox" autoFocus="on" required minLength={6} onChange={handleChange('password')}/>
+                                <input type="Password" name="password" placeholder="Password" className="textBox" required minLength={6} onChange={handleChange('password')}/>
                             </div>
                         </div>
 
@@ -127,24 +137,22 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                                 Confirm Password:
                             </label>
                             <div className="formInput">
-                                <input type="Password" name="confirmPassword" placeholder="Confirm Password" className="textBox" autoFocus="on" required minLength={6} onChange={handleChange('confirmPassword')}/>
+                                <input type="Password" name="confirmPassword" placeholder="Confirm Password" className="textBox" required minLength={6} onChange={handleChange('confirmPassword')}/>
                             </div>
                         </div>
 
-                        <div className="box">
+                        <div className="formBox">
 							<button
 								type="Submit"
 								name="Register"
-								className="submit"
-								disabled={
-									// !validate['username'] ? true : ''
-                                    disableButton()
-								}
-							>
+								className="signUpButton"
+								disabled={disableButton()}>
 								Sign Up
 							</button>
-							{/* <button onClick={handleLogin}>Login</button> */}
 						</div>
+                        <div id="userPassReqs">
+                            *Username must be 4-32 alphanumeric characters in length, password must be at least 6 characters long and cannot contain whitespace.
+                        </div>
                     </form>
                 </div>
                 <br/>
