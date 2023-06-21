@@ -6,6 +6,7 @@ import HintModal from "./HintModal.jsx";
 import WinModal from "./WinModal.jsx";
 import { fetchCurrentPuzzlyNumber, fetchPuzzlyImageUrl, fetchTotalPuzzlyCount } from "../store/slices/imageSlice.js";
 import Toastify from 'toastify-js'
+import { addCurrentPuzzlyResult, fetchUser, isLoggedStatus } from "../store/slices/userSlice.js";
 
 const Play = () => {
     const dispatch = useDispatch();
@@ -35,6 +36,9 @@ const Play = () => {
 
     const [readyToRender, setReadyToRender] = useState(false);
 
+    const loggedIn = useSelector(isLoggedStatus)
+    const user = useSelector(state => state.user.userInfo)
+
 
     // ADD IN SOME USER STATES
     // WILL MAINLY BE FOR STAT KEEPING PURPOSES
@@ -52,6 +56,10 @@ const Play = () => {
     const [errorPopup, setErrorPopup] = useState(false)
 
     useEffect(() => {
+        const token = window.localStorage.getItem('puzzlyToken');
+        if (token) {
+            dispatch(fetchUser())
+        }
         dispatch(fetchCurrentPuzzlyNumber())
         dispatch(fetchTotalPuzzlyCount())
     },[])
@@ -70,8 +78,6 @@ const Play = () => {
         const lastSavedCompleted = Number(window.localStorage.getItem('lastCompletedPuzzly'));
         const localPuzzlyHistory = JSON.parse((window.localStorage.getItem('puzzlyHistory')));
         const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
-        const savedPuzzlyStreak = Number(window.localStorage.getItem('puzzlyStreak'));
-        setStreak(savedPuzzlyStreak)
         if (localPuzzlyHistory) {
             setPuzzlyHistory(localPuzzlyHistory)
             setAverageTime(savedAverageTime)
@@ -82,57 +88,114 @@ const Play = () => {
         }
 
         if (imgUrl && currentPuzzlyNum) {
-            if (lastSavedCompleted === currentPuzzlyNum) {
-                setTimer(Number(window.localStorage.getItem('lastCompletedPuzzlyTime')))
-                setCompleted(true)
+
+            // check user status below
+            // if loggedIn, then check userInfo to set the values
+            // else, do below
+
+            // SUPER MESSY; CAN DEFINITELY REFACTOR
+
+            if (loggedIn) {
+                console.log('logged in')
+                if (currentPuzzlyNum === user.lastCompleted) {
+                    setTimer(user.lastTime)
+                    setCompleted(true)
+                    const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
+                    // now, this may not work if user logs in on multiple devices...
+
+                    setAverageTime(user.avgTime)
+                    setStreak(user.completedStreak)
+                    // unsure how to set puzzly history or if need to here...
+                    // don't think need to, just needed the amount of completed in a row
+                    setSavedGrid(completedGrid)
+                    openWinModal()
+                }
+                else {
+                    window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
+                    const currentTimer = Number(window.localStorage.getItem('currentPuzzlyTimer'));
+                    setTimer(currentTimer);
+                    const storedGrid = JSON.parse(window.localStorage.getItem('savedPuzzlyGrid'))
+                    const savedTiles = JSON.parse(window.localStorage.getItem('remainingPuzzlyTiles'))
+                    const storedSequence = JSON.parse(window.localStorage.getItem('sequencedPuzzlyTiles'))
+
+                    if (checkSavedTilePuzzlyId(grabSavedTile(storedGrid,savedTiles))) {
+                        if (savedTiles?.length !== 16) {
+                            setSavedGrid(storedGrid)
+                        } else {
+                            setSavedGrid(baseGrid)
+                        }        
+                        if (savedTiles?.length + storedSequence?.length === 16) {
+                            setRemainingTiles(savedTiles);
+                            setSequencedTiles(storedSequence)
+                        } 
+                        // edge case check for when user opens for first time at start of day
+                        // checking just for savedTiles 0 length with way storage is set up will throw a false negative
+                        if (savedTiles?.length === 0 && storedSequence === 0) {
+                            checkWinCondition();
+                        }
+                    }
     
-                const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
-                // also load stats here
-
-                const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
-                const savedPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
-                setAverageTime(savedAverageTime);
-                setPuzzlyHistory(savedPuzzlyHistory)
-                
-
-                setSavedGrid(completedGrid)
-                openWinModal()
-            }
-            else {
-                window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
-                const currentTimer = Number(window.localStorage.getItem('currentPuzzlyTimer'));
-                setTimer(currentTimer);
-                
-
-                const storedGrid = JSON.parse(window.localStorage.getItem('savedPuzzlyGrid'))
-                const savedTiles = JSON.parse(window.localStorage.getItem('remainingPuzzlyTiles'))
-                const storedSequence = JSON.parse(window.localStorage.getItem('sequencedPuzzlyTiles')) 
-
-
-                if (checkSavedTilePuzzlyId(grabSavedTile(storedGrid,savedTiles))) {
-                    if (savedTiles?.length !== 16) {
-                        setSavedGrid(storedGrid)
-                    } else {
-                        setSavedGrid(baseGrid)
-                    }        
-                    if (savedTiles?.length + storedSequence?.length === 16) {
-                        setRemainingTiles(savedTiles);
-                        setSequencedTiles(storedSequence)
-                    } 
-                    // edge case check for when user opens for first time at start of day
-                    // checking just for savedTiles 0 length with way storage is set up will throw a false negative
-                    if (savedTiles?.length === 0 && storedSequence === 0) {
-                        checkWinCondition();
+                    else {
+                        setTimer(0);
+                        setSavedGrid(baseGrid);
+                        randomizeTiles();
                     }
                 }
-
-                else {
-                    setTimer(0);
-                    setSavedGrid(baseGrid);
-                    randomizeTiles();
-                }
-
             }
+            else {
+                const savedPuzzlyStreak = Number(window.localStorage.getItem('puzzlyStreak'));
+                setStreak(savedPuzzlyStreak)
+                if (lastSavedCompleted === currentPuzzlyNum) {
+                    setTimer(Number(window.localStorage.getItem('lastCompletedPuzzlyTime')))
+                    setCompleted(true)
+        
+                    const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
+                    // also load stats here
+    
+                    const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
+                    const savedPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
+                    setAverageTime(savedAverageTime);
+                    setPuzzlyHistory(savedPuzzlyHistory)
+                    setSavedGrid(completedGrid)
+                    openWinModal()
+                }
+                else {
+                    window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(baseGrid));
+                    const currentTimer = Number(window.localStorage.getItem('currentPuzzlyTimer'));
+                    setTimer(currentTimer);
+                    
+    
+                    const storedGrid = JSON.parse(window.localStorage.getItem('savedPuzzlyGrid'))
+                    const savedTiles = JSON.parse(window.localStorage.getItem('remainingPuzzlyTiles'))
+                    const storedSequence = JSON.parse(window.localStorage.getItem('sequencedPuzzlyTiles')) 
+    
+    
+                    if (checkSavedTilePuzzlyId(grabSavedTile(storedGrid,savedTiles))) {
+                        if (savedTiles?.length !== 16) {
+                            setSavedGrid(storedGrid)
+                        } else {
+                            setSavedGrid(baseGrid)
+                        }        
+                        if (savedTiles?.length + storedSequence?.length === 16) {
+                            setRemainingTiles(savedTiles);
+                            setSequencedTiles(storedSequence)
+                        } 
+                        // edge case check for when user opens for first time at start of day
+                        // checking just for savedTiles 0 length with way storage is set up will throw a false negative
+                        if (savedTiles?.length === 0 && storedSequence === 0) {
+                            checkWinCondition();
+                        }
+                    }
+    
+                    else {
+                        setTimer(0);
+                        setSavedGrid(baseGrid);
+                        randomizeTiles();
+                    }
+    
+                }
+            }
+
             setReadyToRender(true)
         }
     },[currentPuzzlyNum, imgUrl])
@@ -214,37 +277,62 @@ const Play = () => {
     }
 
     const updateStats = () => {
-        if (!puzzlyHistory.filter(puzzly => puzzly.puzzly === currentPuzzlyNum).length){
-            // might only do this if no user logged in. If user, then invoke different method to create new table entry for UserTime table
-            const historyLength = puzzlyHistory.length;
-            const updatedPuzzlyHistory = [...puzzlyHistory, {puzzly: currentPuzzlyNum, time: timer}]
-            setPuzzlyHistory(updatedPuzzlyHistory);
-            window.localStorage.setItem('puzzlyHistory', JSON.stringify(updatedPuzzlyHistory));
+        if (loggedIn) {
+            // update user stats here; will likely just require a new thunk
+            // - hopefully is that easy
 
-            if (historyLength) {
-                let newAverage = Math.floor(((averageTime * historyLength) + timer) / (historyLength + 1));
-                window.localStorage.setItem('averagePuzzlyTime', newAverage);
-                setAverageTime(newAverage);
-            }
-            else {
-                window.localStorage.setItem('averagePuzzlyTime', timer)
-                setAverageTime(timer)
-            }
+            // ALSO, FIGURE OUT WHERE TO LOAD LOCAL STATS
+            // MIGHT HAVE TO BE IN THE LOG IN MODAL OR LEADERBOARD COMPONENET, SINCE THATS WHERE LOG IN OCCURS
+            // may need to refactor the user model methods somewhat;
+            // -- might be easier to just do a check on every add and just loop through here, instead of looping through on backend
 
-            if (puzzlyHistory.filter(puzzly => puzzly.puzzly === (currentPuzzlyNum-1)).length) {
-                window.localStorage.setItem('puzzlyStreak', `${streak+1}`)
-                setStreak(streak + 1);
-            }
-            else {
-                setStreak(1);
-                window.localStorage.setItem('puzzlyStreak','1');
+            // mahy need to update User method to add current puzzly stats to double check that doesn't currently exist
+            // could also just have a method here that checks if puzzlyHistory.length and userLogged in
+            // - load stats there
+
+            // also, may just have a useSelector for user in the winModal? might be simpler
+            if (user.lastCompleted !== currentPuzzlyNum) {
+                // make a thunk and pass in all relevant info, such as puzzly number, time, usedHint, etc
+                 dispatch(addCurrentPuzzlyResult({
+                    result: {
+                        userId: user.id,
+                        puzzlyNumber: currentPuzzlyNum,
+                        time: timer,
+                        usedHint
+                    }
+                 }));
+
+                //  may think about clearing other stats here? tbd
             }
         }
-        // also want a streak stat...
-        // might be a little more complicated to calulate
-        // can filter and check if puzzlyHistory contains previous puzzly number
-        // - if yes, increment streak
-        // - else, set streak to 1
+        else {
+            if (!puzzlyHistory.filter(puzzly => puzzly.puzzly === currentPuzzlyNum).length){
+                // might only do this if no user logged in. If user, then invoke different method to create new table entry for UserTime table
+                const historyLength = puzzlyHistory.length;
+                const updatedPuzzlyHistory = [...puzzlyHistory, {puzzly: currentPuzzlyNum, time: timer}]
+                setPuzzlyHistory(updatedPuzzlyHistory);
+                window.localStorage.setItem('puzzlyHistory', JSON.stringify(updatedPuzzlyHistory));
+
+                if (historyLength) {
+                    let newAverage = Math.floor(((averageTime * historyLength) + timer) / (historyLength + 1));
+                    window.localStorage.setItem('averagePuzzlyTime', newAverage);
+                    setAverageTime(newAverage);
+                }
+                else {
+                    window.localStorage.setItem('averagePuzzlyTime', timer)
+                    setAverageTime(timer)
+                }
+
+                if (puzzlyHistory.filter(puzzly => puzzly.puzzly === (currentPuzzlyNum-1)).length) {
+                    window.localStorage.setItem('puzzlyStreak', `${streak+1}`)
+                    setStreak(streak + 1);
+                }
+                else {
+                    setStreak(1);
+                    window.localStorage.setItem('puzzlyStreak','1');
+                }
+            }
+        }
     }
 
     const checkWinCondition = () => {
@@ -315,7 +403,7 @@ const Play = () => {
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
              <div id="playPage">
-                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={puzzlyHistory.length} averageTime={averageTime} streak={streak}/> : null}
+                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak}/> : null}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
                     {!completed ? <p id="hint" onClick={openHintModal}>Hint?</p> : null}

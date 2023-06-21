@@ -172,7 +172,7 @@ User.prototype.getResultHistory = async () => {
     return resultHistory;
 }
 
-User.prototype.updateCurrentStreak = async (currentPuzzlyNum) => {
+User.prototype.updateCurrentStreak = async function (currentPuzzlyNum) {
     // const results = await this.getResultHistory();
     // // could also just try to search for a userResult with puzzlyNumber (currentPuzzlyNum-1) with userId
     // // - could reduce potential latency issues down the road
@@ -183,6 +183,8 @@ User.prototype.updateCurrentStreak = async (currentPuzzlyNum) => {
     //     this.completedStreak = 1;
     // }
     // await this.update();
+    // console.log(lastCompleted, currentPuzzlyNum)
+    // console.log('will break here')
     if (this.lastCompleted === currentPuzzlyNum - 1) {
         this.completedStreak += 1;
     }
@@ -190,22 +192,24 @@ User.prototype.updateCurrentStreak = async (currentPuzzlyNum) => {
         this.completedStreak = 1;
     }
     this.lastCompleted = currentPuzzlyNum
-    await this.update()
+    await this.save()
 }
 
-User.prototype.addCurrentResult = async (puzzlyNumber, time, usedHint) => {
-    await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, userId: this.id})
+User.prototype.addCurrentResult = async function (puzzlyNumber, time, usedHint) {
+    // const user = await User.findByPk(id)
+    await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, usedHint: usedHint, userId: this.id})
     let newAvgTime = Math.floor((this.avgTime*this.completed + time) / (this.completed + 1))
     this.avgTime = newAvgTime
     await this.updateCurrentStreak(puzzlyNumber)
     this.completed += 1;
     this.lastTime = time;
     this.usedHint = usedHint;
-    await this.update()
+    await this.save()
+    return this;
 }
 
 // friend methods
-User.prototype.addFriendByUsername = async (username) => {
+User.prototype.addFriendByUsername = async function (username) {
     const friend = await User.findOne({
         where: {
             username: username.toLowerCase()
@@ -218,13 +222,13 @@ User.prototype.addFriendByUsername = async (username) => {
 
 // should be able to pass in friend model directly from front end
 // - if not, will refactor to pass in an id or username and find the User before removing
-User.prototype.removeFromFriendList = async (friendId) => {
+User.prototype.removeFromFriendList = async function (friendId) {
     const friendToRemove = await User.findByPk(friendId)
     await this.removeFriend(friendToRemove)
 }
 
 // might not even need this, can make sure to include User model as friend on front end and get that way
-User.prototype.getFriendsList = async () => {
+User.prototype.getFriendsList = async function (){
     const selfWithFriends = await User.findByPk(this.id, {
         include: {
             model: User,
@@ -234,7 +238,7 @@ User.prototype.getFriendsList = async () => {
     return selfWithFriends.friends;
 }
 
-User.prototype.getFriendsPuzzlyResults = async (puzzlyNumber) => {
+User.prototype.getFriendsPuzzlyResults = async function (puzzlyNumber) {
     const selfWithFriendsResults = await User.findByPk(this.id, {
         include: {
             model: User,

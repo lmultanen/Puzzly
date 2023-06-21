@@ -18,7 +18,6 @@ const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
         if (token) {
             dispatch(fetchUser())
             setShowLogInModal(false)
-            // show toast here
             Toastify({text: `Welcome back, ${login.username}!`, duration:2000 ,gravity: "top", position: "right", backgroundColor: "dodgerBlue"}).showToast();
         }
     },[token])

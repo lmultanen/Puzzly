@@ -13,6 +13,9 @@ const UserResult = db.define('userResult', {
         validate: {
             notEmpty: true
         }
+    },
+    usedHint: {
+        type: Sequelize.BOOLEAN,
     }
 })
 

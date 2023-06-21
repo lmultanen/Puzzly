@@ -44,6 +44,14 @@ export const validateSignupForm = createAsyncThunk(
 // refactor this later
 // need to add in a validate route for this to work
 
+export const addCurrentPuzzlyResult = createAsyncThunk(
+    'user/addCurrentPuzzlyResult',
+    async({ result }) => {
+        const { data } = await axios.post('/api/user/addcurrentresult', {result})
+        return data;
+    }
+)
+
 const initialState = {
 	userInfo: {},
     status: 'idle',
@@ -104,10 +112,14 @@ const userSlice = createSlice({
 				const field = action.payload.field;
 				state.formInputAvailable[field] = action.payload.isAvailable;
 			})
+            .addCase(addCurrentPuzzlyResult.fulfilled, (state, action) => {
+                state.status = 'succeeded'
+                state.userInfo = action.payload
+            })
     }
 })
 
-export const isLoggedStatus = (state) => state.user.isLogged;
+export const isLoggedStatus = (state) => state.user.isLoggedIn;
 export const getUserToken = (state) => state.user.token;
 export const getFormInputAvailable = (state) => state.user.formInputAvailable;
 export const getError = (state) => state.user.error;

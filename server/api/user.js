@@ -45,6 +45,18 @@ router.post('/signup', async (req, res, next) => {
     }
 });
 
+// adding results
+router.post('/addcurrentresult', async (req, res, next) => {
+    try {
+        const { result } = req.body;
+        const user = await User.findByPk(result.userId);
+        const updated = await user.addCurrentResult(result.puzzlyNumber, result.time, result.usedHint)
+        res.send(updated)
+    } catch (error) {
+        next(error)
+    }
+})
+
 router.get('/leaderboard', async (req, res, next) => {
     try {
         // will need to hook up appropriate params in userSlice.js
@@ -132,6 +144,7 @@ router.put('/allusers/:id', isAdmin, async (req, res, next) => {
         next(error)
     }
 })
+
 
 // could also add in a delete user account it need be
 
