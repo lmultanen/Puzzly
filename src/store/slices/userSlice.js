@@ -98,6 +98,7 @@ const userSlice = createSlice({
 				state.error = action.error;
 			})
             .addCase(fetchUser.fulfilled, (state, action) => {
+                state.status = 'succeeded';
 				state.userInfo = action.payload;
 				state.isLoggedIn = action.payload ? true : false;
 				state.token = localStorage.getItem('puzzlyToken');

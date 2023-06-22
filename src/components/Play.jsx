@@ -280,24 +280,19 @@ const Play = () => {
     }
 
     const addSavedStatsToUser = () => {
-        if (puzzlyHistory.length && !localStatsAdded) {
+        if (!localStatsAdded) {
             setLocalStatsAdded(true)
-
             dispatch(addLocalPuzzlyResults({
                 results: {
                     userId: user.id,
-                    history: puzzlyHistory,
+                    // ensure always adding most recent day's if multiple user's log in/out on same device
+                    history: puzzlyHistory.length ? puzzlyHistory : [{puzzly: currentPuzzlyNum, time: window.localStorage.getItem('lastCompletedPuzzlyTime'), usedHint: usedHint}],
                     currentPuzzly: currentPuzzlyNum
                 }
             }))
             window.localStorage.setItem('puzzlyHistory', JSON.stringify([]))
-            setPuzzlyHistory([])
+            setPuzzlyHistory([{puzzly: currentPuzzlyNum, time: window.localStorage.getItem('lastCompletedPuzzlyTime'), usedHint: usedHint}])
             window.localStorage.setItem('puzzlyStreak',0);
-
-            // CAN CLEAR PUZZLY HISTORY HERE
-            // ALSO, ADD A CALCULATE STREAK METHOD TO USER MODEL
-            // ONLY WILL RUN AFTER LOADING FROM LOCAL STORAGE
-            // 
         }
     }
 
@@ -324,7 +319,7 @@ const Play = () => {
         else {
             if (!puzzlyHistory.filter(puzzly => puzzly.puzzly === currentPuzzlyNum).length){
                 const historyLength = puzzlyHistory.length;
-                const updatedPuzzlyHistory = [...puzzlyHistory, {puzzly: currentPuzzlyNum, time: timer}]
+                const updatedPuzzlyHistory = [...puzzlyHistory, {puzzly: currentPuzzlyNum, time: timer, usedHint: usedHint}]
                 setPuzzlyHistory(updatedPuzzlyHistory);
                 window.localStorage.setItem('puzzlyHistory', JSON.stringify(updatedPuzzlyHistory));
 

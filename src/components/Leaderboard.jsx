@@ -16,6 +16,10 @@ const Leaderboard = () => {
 
     const userState = useSelector(state => state.user)
 
+    // will change this to a use selector later
+    const [friendsList, setFriendsList] = useState([])
+    const [fillerList, setFillerList] = useState([1,2,3,4,5])
+
     // add in some toast pop ups for logging in, logging out, etc
 
     useEffect(() => {
@@ -27,9 +31,22 @@ const Leaderboard = () => {
     },[])
 
     useEffect(() => {
-        setReadyToRender(true)
+        if (currentPuzzlyNum && 
+           ( ((userState.status === "succeeded") && userState.isLoggedIn) || !userState.isLoggedIn )) {
+            if (userState.isLoggedIn) {
+                const filler = [];
+                for (let i = 0; i<5-(friendsList.length + 1); i++) {
+                    filler.push(5-i)
+                }
+                setFillerList(filler)
+            }
+            setReadyToRender(true)
+        }
+        if (!userState.isLoggedIn) {
+            setFillerList([1,2,3,4,5])
+        }
         // may also want to wait for userState useSelector to return before this
-    },[currentPuzzlyNum])
+    },[currentPuzzlyNum,userState.isLoggedIn])
 
     const openLogInModal = () => {
         setShowLogInModal(true)
@@ -45,6 +62,24 @@ const Leaderboard = () => {
         // likely some other cleanup once having a friends list state
     }
 
+    function str_pad_left(string, pad, length) {
+        return (new Array(length + 1).join(pad) + string).slice(-length);
+      }
+
+    const convertSecsToMins = (timeInSeconds) => {
+        const hours = Math.floor(timeInSeconds / 3600);
+        timeInSeconds = timeInSeconds - (3600 * hours);
+        const mins = Math.floor(timeInSeconds / 60);
+        const seconds = Math.floor(timeInSeconds - (60 * mins));
+        const minsAndSecs = str_pad_left(mins,'0',2) + ':' + str_pad_left(seconds,'0',2);
+        if (hours) {
+            return str_pad_left(hours,'0',2) + ':' + minsAndSecs;
+        }
+        else {
+            return minsAndSecs;
+        }
+    }
+
     return(
         readyToRender ?
         <div id="leaderboardContainer">
@@ -53,33 +88,26 @@ const Leaderboard = () => {
             {!userState.isLoggedIn ?
             <div className="leaderboard loggedOut">
                 {/* may want to make this a datatable instead */}
-                <div id="leaderboardHeaderRow">
-                    <div className="leaderboardHeader">Pos</div>
-                    <div className="leaderboardHeader">Name</div>
-                    <div className="leaderboardHeader">Time</div>
-                </div>
-                <div className="leaderboardRow">
-                    <div className="leaderboardPlace">1</div>
-                    <div className="leaderboardName">------</div>
-                    <div className="leaderboardTime">----</div>
-                </div>
-                <div className="leaderboardRow">
-                    <div className="leaderboardPlace">2</div>
-                    <div className="leaderboardName">------</div>
-                    <div className="leaderboardTime">----</div>
-                </div>
-                <div className="leaderboardRow">
-                    <div className="leaderboardPlace">3</div>
-                    <div className="leaderboardName">------</div>
-                    <div className="leaderboardTime">----</div>
-                </div>
-
+                <table className="leaderboardTable loggedOut">
+                    <thead>
+                        <tr id="leaderboardHeaderRow">
+                            <th className="leaderboardHeader">Pos</th>
+                            <th className="leaderboardHeader">Name</th>
+                            <th className="leaderboardHeader">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {fillerList.map((val, idx) => (
+                            <tr className="leaderboardRow" key={idx}>
+                                <td className="leaderboardPlace">*</td>
+                                <td className="leaderboardName">------</td>
+                                <td className="leaderboardTime">----</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                
                 <div id="logInSignUpDiv">
-                    {/* could make this whoel thing a modal?
-                        redirect to home page if user closes the modal
-                        also seems unneccessary
-                        could just make a blank leaderboard and have the log in/sign up at bottom
-                    */}
                     {showLogInModal ? <LogInModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal}/> : null}
                     {showSignUpModal ? <SignUpModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal}/> : null}
                     <div className="logInLink" onClick={openLogInModal}>
@@ -94,18 +122,32 @@ const Leaderboard = () => {
             </div>
             :
             <div className="leaderboard">
-                <div id="leaderboardHeaderRow">
-                    <div className="leaderboardHeader">Pos</div>
-                    <div className="leaderboardHeader">Name</div>
-                    <div className="leaderboardHeader">Time</div>
-                </div>
-                {/* update this to be dynamic later */}
-                {/* will change font-style/size based on if completed or not */}
-                <div className="leaderboardRow">
-                    <div className="leaderboardPlace">{userState.userInfo.lastComplete === currentPuzzlyNum ? "1" : "*"}</div>
-                    <div className="leaderboardName">{`${userState.userInfo.username}(you)`}</div>
-                    <div className="leaderboardTime">{userState.userInfo.lastComplete === currentPuzzlyNum ? userState.userInfo.lastCompleted : "----"}</div>
-                </div>
+                <table className="leaderboardTable loggedOut">
+                    <thead>
+                        <tr id="leaderboardHeaderRow">
+                            <th className="leaderboardHeader">Pos</th>
+                            <th className="leaderboardHeader">Name</th>
+                            <th className="leaderboardHeader">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {/* filler working appropriately */}
+                            <tr className="leaderboardRow">
+                                <td className={userState.userInfo.lastCompleted !== currentPuzzlyNum ? "leaderboardPlace unfinished" :"leaderboardPlace"}>{userState.userInfo.lastCompleted === currentPuzzlyNum ? "1" : "*"}</td>
+                                <td className={userState.userInfo.lastCompleted !== currentPuzzlyNum ? "leaderboardName unfinished" :"leaderboardName"}>{`${userState.userInfo.username} (you)`}</td>
+                                <td className={userState.userInfo.lastCompleted !== currentPuzzlyNum ? "leaderboardTime unfinished" :"leaderboardTime"}>{userState.userInfo.lastCompleted === currentPuzzlyNum ? convertSecsToMins(userState.userInfo.lastTime) : "----"}</td>
+                            </tr>
+                            {/* map friends list here */}
+                            {/* in truth, should insert player into friends list */}
+                        {fillerList.map((val, idx) => (
+                            <tr className="leaderboardRow" key={idx}>
+                                <td className="leaderboardPlace">*</td>
+                                <td className="leaderboardName">------</td>
+                                <td className="leaderboardTime">----</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
 
                 <button id="friendsListButton" type="click" onClick={()=>console.log('hook up modal later!')}>
                     Friends List
@@ -132,3 +174,5 @@ export default Leaderboard;
 // - add an "add friends" button below that pulls up a modal
 // --- opens a username search bar, spawns a toast when adding successful
 // - could add a log out button as well somewhere on the page
+
+// could add a render to render bool here too; otherwise flashes for a second

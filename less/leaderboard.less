@@ -19,6 +19,10 @@
     min-width: 75%
 }
 
+.leaderboardTable {
+    width: 100%;
+}
+
 #logInSignUpDiv {
     margin: 1.5em;
     margin-top: 5em;
@@ -31,6 +35,7 @@
 .leaderboardRow {
     display: flex;
     justify-content: space-between;
+    margin-bottom: .5em;
 }
 
 .leaderboardHeader {
@@ -41,7 +46,7 @@
 #leaderboardHeaderRow {
     display: flex;
     justify-content: space-between;
-    margin: 1em;
+    margin-bottom: 1em;
 }
 
 #friendsListButton {
@@ -63,4 +68,12 @@
     left: 50%;
     bottom: 20px;
     transform: translate(-50%,-50%);
+}
+
+.leaderboardName.unfinished {
+    font-style: italic;
+}
+
+.leaderboardTime, .leaderboardName, .leaderboardPlace {
+    font-size: small;
 }

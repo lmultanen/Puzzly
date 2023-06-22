@@ -148,11 +148,11 @@ User.authenticate = async ({ username, password }) => {
 User.prototype.addResult = async function (puzzlyNumber, time, usedHint) {
     // may want to first check that User doesn't already have a result for this puzzlyNumber
     await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, userId: this.id, usedHint: usedHint})
-    this.completed += 1;
     if (puzzlyNumber > this.lastCompleted) {
         this.lastCompleted = puzzlyNumber
     }
     let newAvgTime = Math.floor((this.avgTime*this.completed + time) / (this.completed + 1))
+    this.completed += 1;
     this.avgTime = newAvgTime
 
     await this.save();
@@ -193,7 +193,6 @@ User.prototype.calculateStreak = async function (currentPuzzlyNum) {
     }
     this.lastTime = orderedResults[0].time;
     this.lastCompleted = orderedResults[0].puzzlyNumber
-    // console.log(orderedResults[0].time,orderedResults[0].puzzlyNumber)
     if (currentPuzzlyNum !== orderedResults[0].puzzlyNumber) {
         this.completedStreak = 0;
     }
@@ -224,7 +223,7 @@ User.prototype.calculateStreak = async function (currentPuzzlyNum) {
 // relies on streak field being up to date
 User.prototype.updateCurrentStreak = async function (currentPuzzlyNum) {
     if (this.lastCompleted === currentPuzzlyNum - 1) {
-        this.completedStreak += 1;
+        this.completedStreak = this.completedStreak + 1;
     }
     else {
         this.completedStreak = 1;
@@ -242,7 +241,11 @@ User.prototype.addCurrentResult = async function (puzzlyNumber, time, usedHint) 
     this.lastTime = time;
     this.usedHint = usedHint;
     await this.save()
-    return this;
+    return await User.findByPk(this.id, {
+        attributes: {
+            exclude: ["password"]
+        }
+    });
 }
 
 // friend methods
