@@ -1,0 +1,62 @@
+#portal .friendListModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+  }
+#friendListModal {
+    padding-top: 50px;
+    padding-left: 25px;
+    padding-right: 25px;
+    z-index: 1;
+    width: 350px;
+    height: 400px;
+    background: white;
+    display: flex;
+    flex-direction: row;
+    // align-items: center;
+    align-items: flex-start;
+    // justify-content: center
+    justify-content: space-between;
+    border-radius: 5px;
+    position: relative;
+    animation: animate 0.3s;
+    overflow: hidden;
+  }
+
+  #currentFriends {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    // justify-content: center;
+    align-items: center;
+    border-right: 1px dashed black;
+    height: 350px;
+  }
+
+  #currentFriendList {
+    min-height: 100px;
+    max-height: 250px;
+    overflow: hidden;
+    overflow-y: scroll;
+    text-align: left;
+    width: 60%;
+    margin-top: 25px;
+    scrollbar-color: grey;
+    border: 1px black solid;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px grey
+  }
+
+  #addFriendContainer {
+    width: 50%;
+    text-align: center;
+  }

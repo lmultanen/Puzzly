@@ -38,8 +38,6 @@ const WinModal = ({
 
     const shareButtonClickHandler = () => {
         navigator.clipboard.writeText(`Completed${usedHint ? '*' : ''} Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}!\n(add emoji or something)\nFollow link to try: puzzly.us`);
-        // alert("Copied to clipboard")
-        // could have a toast popup instead?
         Toastify({text: "Copied to clipboard!", duration:1000 ,gravity: "bottom", position: "right", backgroundColor: "dodgerBlue"}).showToast();
     }
 
@@ -49,11 +47,8 @@ const WinModal = ({
                 <button className="closeModal winButton" onClick={() => setShowWinModal(false)}>X</button>
                 <h2 id="winCongrats">Congratulations!</h2>
                 <div id="winMessage">
-                    {/* could write a conversion method to convert time to minute format */}
-                    {/* You completed Puzzly {puzzlyNumber} in {time}{usedHint ? '*' : ''} seconds! */}
                     You completed{usedHint ? '*' : ''} Puzzly {puzzlyNumber} in {convertSecsToMins(time)}!
                 </div>
-                {/* UPDATE WITH REAL STATS */}
                 <table id="winStatisticsTable">
                     <thead>
                         <tr id="statsHeader">
@@ -73,7 +68,6 @@ const WinModal = ({
                 </table>
                 <img id="winModalImg" src={imgUrl}/>
                 {usedHint ? <div id="hintUsedMessage">* denotes hint was used. Try solving future Puzzlys without a hint for a bigger challenge!</div> : <br/>}
-                {/* add in copy functionality here later */}
                 <button className="shareButton" onClick={shareButtonClickHandler}>Share Time</button>
             </div>
         </div>,
@@ -82,15 +76,3 @@ const WinModal = ({
 }
 
 export default WinModal
-
-// next step: add in further stat collection to local storage
-// - create an array of objects that keeps track of {puzzly: num, time: seconds}
-// --- can calculate total completed from length of this array
-// - keep track of current streak
-// - keep track of avg time in seconds
-
-// then, can pass in stats object to this winModal as well
-// - once stats completed, then can work on setting up User model in backend
-// - will want an instance method that allows for a new User to load local storage stats to db
-// - the object array above will need to create user -> image association that keeps track of puzzlyNum, timeInSeconds
-// --- or, create new table model that just is associated to User containing the above info; doesn't necessarily need to be associated to the image

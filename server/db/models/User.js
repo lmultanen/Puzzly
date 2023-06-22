@@ -261,6 +261,9 @@ User.prototype.addFriendByUsername = async function (username) {
     if (friend) {
         await this.addFriend(friend)
     }
+    else {
+        throw new Error("User not found")
+    }
 }
 
 // should be able to pass in friend model directly from front end
@@ -285,7 +288,9 @@ User.prototype.getFriendsList = async function (){
             as: "Friend"
         }
     })
-    return selfWithFriends.friends;
+    console.log(selfWithFriends.Friend)
+
+    return selfWithFriends.Friend;
 }
 
 User.prototype.getFriendsPuzzlyResults = async function (puzzlyNumber) {

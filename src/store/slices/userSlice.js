@@ -60,6 +60,37 @@ export const addLocalPuzzlyResults = createAsyncThunk(
     }
 )
 
+// friend thunks; might want to make a separate slice
+
+export const fetchFriendsList = createAsyncThunk(
+    'user/fetchFriendsList',
+    async() => {
+        const token = window.localStorage.getItem('puzzlyToken');
+	    if (token) {    
+            const { data } = await axios.get('/api/user/friends',{
+                headers: { authorization: token },
+            })
+            return data;
+        }
+    }
+)
+
+export const addFriend = createAsyncThunk(
+    'user/addFriend',
+    async({ friend }) => {
+        const token = window.localStorage.getItem('puzzlyToken');
+	    if (token) {    
+            const { data } = await axios.put('/api/user/addfriend', friend,{
+                headers: { authorization: token },
+            })
+            return data;
+        }
+    }
+)
+
+
+
+
 const initialState = {
 	userInfo: {},
     status: 'idle',
@@ -67,7 +98,9 @@ const initialState = {
 	isAdmin: false,
 	error: null,
 	token: null,
-    formInputAvailable: { username: true }
+    formInputAvailable: { username: true },
+    newFriendName: null,
+    friends: []
 };
 
 const userSlice = createSlice({
@@ -84,6 +117,9 @@ const userSlice = createSlice({
         setError: (state) => {
 			state.error = null;
 		},
+        resetNewFriendName: (state) => {
+            state.newFriendName = null
+        }
 	},
     extraReducers(builder) {
         builder
@@ -128,7 +164,21 @@ const userSlice = createSlice({
             .addCase(addLocalPuzzlyResults.fulfilled, (state, action) => {
                 state.status = 'succeeded'
                 state.userInfo = action.payload
-                // may need to prune password somehow
+            })
+            .addCase(addFriend.fulfilled, (state, action) => {
+                state.status = 'succeeded'
+                state.newFriendName = action.payload.username
+                state.friends = action.payload.friends
+                // do other stuff later
+                // will resend friends list here
+            })
+            .addCase(addFriend.rejected, (state) => {
+                state.status = 'failed';
+                state.error = "User Not Found"
+            })
+            .addCase(fetchFriendsList.fulfilled, (state, action) => {
+                state.status = 'succeeded'
+                state.friends = action.payload
             })
     }
 })
@@ -137,7 +187,8 @@ export const isLoggedStatus = (state) => state.user.isLoggedIn;
 export const getUserToken = (state) => state.user.token;
 export const getFormInputAvailable = (state) => state.user.formInputAvailable;
 export const getError = (state) => state.user.error;
+export const getNewFriendName = (state) => state.user.newFriendName;
 
-export const { logout, setError } = userSlice.actions;
+export const { logout, setError, resetNewFriendName } = userSlice.actions;
 
 export default userSlice.reducer;

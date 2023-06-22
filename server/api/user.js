@@ -86,7 +86,10 @@ router.put('/addfriend', async (req, res, next) => {
     try {
         const user = await User.byToken(req.headers.authorization)
         await user.addFriendByUsername(req.body.username)
-        res.send("success")
+        const updated = await user.getFriendsList()
+        // console.log()
+        res.send({username: req.body.username, friends: updated})
+        // may want to resend full friend list
     } catch (error) {
         next(error)
     }

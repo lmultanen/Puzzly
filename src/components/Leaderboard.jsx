@@ -5,6 +5,7 @@ import { fetchUser, logout } from "../store/slices/userSlice.js";
 import LogInModal from "./LogInModal.jsx";
 import SignUpModal from "./SignUpModal.jsx";
 import Toastify from 'toastify-js';
+import FriendList from "./FriendList.jsx";
 
 const Leaderboard = () => {
     const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const Leaderboard = () => {
 
     const [showLogInModal, setShowLogInModal] =  useState(false);
     const [showSignUpModal, setShowSignUpModal] = useState(false);
+    const [showFriendListModal, setShowFriendListModal] = useState(false);
     const [readyToRender, setReadyToRender] = useState(false);
 
     const userState = useSelector(state => state.user)
@@ -56,6 +58,10 @@ const Leaderboard = () => {
         setShowSignUpModal(true)
     }
 
+    const openFriendListModal = () => {
+        setShowFriendListModal(true)
+    }
+
     const logoutHandler = () => {
         Toastify({text: `Successfully logged out ${userState.userInfo.username}!`, duration:2000 ,gravity: "bottom", position: "center", backgroundColor: "dodgerBlue"}).showToast();
         dispatch(logout())
@@ -87,7 +93,6 @@ const Leaderboard = () => {
             <h4>Puzzly {currentPuzzlyNum}</h4>
             {!userState.isLoggedIn ?
             <div className="leaderboard loggedOut">
-                {/* may want to make this a datatable instead */}
                 <table className="leaderboardTable loggedOut">
                     <thead>
                         <tr id="leaderboardHeaderRow">
@@ -148,8 +153,8 @@ const Leaderboard = () => {
                         ))}
                     </tbody>
                 </table>
-
-                <button id="friendsListButton" type="click" onClick={()=>console.log('hook up modal later!')}>
+                {showFriendListModal ? <FriendList setShowFriendListModal={setShowFriendListModal}/> : null}
+                <button id="friendsListButton" type="click" onClick={openFriendListModal}>
                     Friends List
                     {/* will probably make a button */}
                     {/* spawn new modal to view friends list and have ability to add more */}

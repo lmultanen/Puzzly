@@ -55,10 +55,6 @@ const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
 
     const handleSubmit = (event) => {
 		event.preventDefault();
-        // dispatch log in
-        // add some error handling later
-        // if successful, then close
-        // otherwise, cause modal to shake
         dispatch(loginUser({ login }))
 	};
 
