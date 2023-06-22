@@ -63,10 +63,21 @@
     text-align: center;
     margin: auto;
     margin-top: 5em;
-    width: fit-content
+    width: fit-content;
+    background-color: rgb(145, 22, 145);
+    color: white;
+    border: 1px solid black;
+    box-shadow: none;
+    padding: 10px 15px;
+    border-radius: 20px;
 }
 
-#friendsListButton:hover, #logOutButton:hover {
+#friendsListButton:hover {
+    cursor: pointer;
+    color: black;
+}
+
+#logOutButton:hover {
     cursor: pointer;
 }
 
@@ -112,4 +123,19 @@ tr.leaderboardRow {
 
 .leaderboardHeader.leaderboardName {
     width: 65%;
+}
+
+#logOutButton {
+    // background-color: rgb(145, 22, 145);
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+    box-shadow: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+#logOutButton:hover {
+    color: gray
 }

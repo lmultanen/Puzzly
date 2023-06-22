@@ -44,7 +44,7 @@ const WinModal = ({
     return ReactDom.createPortal(
         <div className="winModalContainer" ref={modalRef} onClick={closeModal}>
             <div id="winModal">
-                <button className="closeModal winButton" onClick={() => setShowWinModal(false)}>X</button>
+                <button className="closeModal" onClick={() => setShowWinModal(false)}>X</button>
                 <h2 id="winCongrats">Congratulations!</h2>
                 <div id="winMessage">
                     You completed{usedHint ? '*' : ''} Puzzly {puzzlyNumber} in {convertSecsToMins(time)}!

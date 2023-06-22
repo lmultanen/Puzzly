@@ -23,7 +23,7 @@
     position: relative;
     animation: animate 0.3s;
     overflow: hidden;
-    box-shadow: 2px -1px 1px black;
+    box-shadow: 2px 1px 1px black;
   }
 
   .logInLink {
@@ -57,14 +57,35 @@
     width: 40%;
   }
 
+  .formBox.button {
+    max-width: 100%;
+    margin: auto;
+  }
+
   .logInButton {
     width: fit-content;
     margin: auto;
     margin-bottom: 2em;
     margin-top: 1em;
+    background-color: rgb(145, 22, 145);
+    color: white;
+    border: 1px solid black;
+    box-shadow: none;
+    padding: 10px 15px;
+    border-radius: 20px;
   }
 //   make larger, can try to center more
 
   .logInButton:hover {
     cursor: pointer;
+    color: black;
+  }
+
+  .logInButton:disabled {
+    background-color: rgb(208, 96, 208);
+  }
+
+  .logInButton:disabled:hover {
+    color: white;
+    cursor: not-allowed;
   }

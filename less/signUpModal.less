@@ -23,7 +23,7 @@
     position: relative;
     animation: animate 0.3s;
     overflow: hidden;
-    box-shadow: 2px -1px 1px black;
+    box-shadow: 2px 1px 1px black;
   }
 
   .signUpLink {
@@ -64,9 +64,6 @@
     flex-direction: column;
     margin-left: 28.5%;
     margin-bottom: .5em;
-    // margin-right: 25%;
-    // justify-content:flex-start;
-    // align-items: center;
     max-width: 50%;
   }
 
@@ -75,6 +72,31 @@
   }
 
   .signUpButton {
-    // margin-left: 28.5%;
     width:fit-content;
+    margin: auto;
+    margin-top: 1em;
+    background-color: rgb(145, 22, 145);
+    color: white;
+    border: 1px solid black;
+    box-shadow: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+  }
+
+  .signUpButton:hover {
+    cursor: pointer;
+    color: black;
+  }
+
+  .signUpButton:disabled {
+    background-color: rgb(208, 96, 208);
+  }
+
+  .signUpButton:disabled:hover {
+    color: white;
+    cursor: not-allowed;
+  }
+
+  .label {
+    font-size: small;
   }

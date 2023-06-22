@@ -104,7 +104,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                 <div>Password:</div>
                 <div>Verify Password:</div> */}
                 <div className="signUpContainer">
-                    <h2>Sign Up Form</h2>
+                    <h2>New User Form</h2>
                     <p style={{fontStyle: "italic"}}>Input Username and Password to create account.</p>
                     <br/>
                     <form onSubmit={handleSubmit} autoComplete="on">
@@ -141,7 +141,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                             </div>
                         </div>
 
-                        <div className="formBox">
+                        <div className="formBox button">
 							<button
 								type="Submit"
 								name="Register"

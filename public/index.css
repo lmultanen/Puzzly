@@ -205,7 +205,7 @@
   position: relative;
   animation: animate 0.3s;
   overflow: hidden;
-  box-shadow: 2px -1px 1px black;
+  box-shadow: 2px 1px 1px black;
 }
 .closeModal {
   position: absolute;
@@ -265,7 +265,7 @@
   outline-style: solid;
   outline-color: black;
   outline-width: 1px;
-  box-shadow: 2px -1px 1px black;
+  box-shadow: 2px 1px 1px black;
   padding: 10px;
 }
 #winModalImg {
@@ -285,75 +285,22 @@
   text-align: center;
   width: 80%;
 }
+.shareButton {
+  background-color: #911691;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+.shareButton:hover {
+  cursor: pointer;
+  color: black;
+}
 @media screen and (max-width: 500px) {
   #winModal {
     height: 70%;
   }
-  .winButton {
-    height: 40px;
-  }
-}
-#portal .logInModalContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-}
-#logInModal {
-  z-index: 1;
-  width: 350px;
-  height: 200px;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  position: relative;
-  animation: animate 0.3s;
-  overflow: hidden;
-  box-shadow: 2px -1px 1px black;
-}
-.logInLink {
-  color: blue;
-  margin-left: 0.25em;
-  margin-right: 0.25em;
-}
-.logInLink:hover {
-  cursor: pointer;
-  text-decoration: underline;
-}
-#userPassLogInDiv {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 350px;
-}
-.logInContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.formBox.login {
-  display: flex;
-  flex-direction: column;
-  margin: 1em;
-  width: 40%;
-}
-.logInButton {
-  width: fit-content;
-  margin: auto;
-  margin-bottom: 2em;
-  margin-top: 1em;
-}
-.logInButton:hover {
-  cursor: pointer;
 }
 #portal .signUpModalContainer {
   position: fixed;
@@ -380,7 +327,7 @@
   position: relative;
   animation: animate 0.3s;
   overflow: hidden;
-  box-shadow: 2px -1px 1px black;
+  box-shadow: 2px 1px 1px black;
 }
 .signUpLink {
   color: blue;
@@ -421,6 +368,108 @@
 }
 .signUpButton {
   width: fit-content;
+  margin: auto;
+  margin-top: 1em;
+  background-color: #911691;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+.signUpButton:hover {
+  cursor: pointer;
+  color: black;
+}
+.signUpButton:disabled {
+  background-color: #d060d0;
+}
+.signUpButton:disabled:hover {
+  color: white;
+  cursor: not-allowed;
+}
+.label {
+  font-size: small;
+}
+#portal .logInModalContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+}
+#logInModal {
+  z-index: 1;
+  width: 350px;
+  height: 200px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  position: relative;
+  animation: animate 0.3s;
+  overflow: hidden;
+  box-shadow: 2px 1px 1px black;
+}
+.logInLink {
+  color: blue;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+}
+.logInLink:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+#userPassLogInDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 350px;
+}
+.logInContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.formBox.login {
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+  width: 40%;
+}
+.formBox.button {
+  max-width: 100%;
+  margin: auto;
+}
+.logInButton {
+  width: fit-content;
+  margin: auto;
+  margin-bottom: 2em;
+  margin-top: 1em;
+  background-color: #911691;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+.logInButton:hover {
+  cursor: pointer;
+  color: black;
+}
+.logInButton:disabled {
+  background-color: #d060d0;
+}
+.logInButton:disabled:hover {
+  color: white;
+  cursor: not-allowed;
 }
 #leaderboardContainer {
   display: flex;
@@ -478,8 +527,17 @@
   margin: auto;
   margin-top: 5em;
   width: fit-content;
+  background-color: #911691;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 10px 15px;
+  border-radius: 20px;
 }
-#friendsListButton:hover,
+#friendsListButton:hover {
+  cursor: pointer;
+  color: black;
+}
 #logOutButton:hover {
   cursor: pointer;
 }
@@ -519,6 +577,18 @@ tr.leaderboardRow {
 .leaderboardHeader.leaderboardName {
   width: 65%;
 }
+#logOutButton {
+  background-color: black;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  width: fit-content;
+}
+#logOutButton:hover {
+  color: gray;
+}
 #portal .friendListModalContainer {
   position: fixed;
   top: 0;
@@ -547,7 +617,7 @@ tr.leaderboardRow {
   position: relative;
   animation: animate 0.3s;
   overflow: hidden;
-  box-shadow: 2px -1px 1px black;
+  box-shadow: 2px 1px 1px black;
 }
 #currentFriends {
   display: flex;
@@ -610,6 +680,15 @@ tr.leaderboardRow {
 .buttonDiv {
   width: 100%;
 }
+.addFriendButton {
+  background-color: #911691;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+}
 .addFriendButton:hover {
   cursor: pointer;
+  color: black;
 }

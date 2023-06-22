@@ -27,7 +27,7 @@
     outline-style: solid;
     outline-color: black;
     outline-width: 1px;
-    box-shadow: 2px -1px 1px black;
+    box-shadow: 2px 1px 1px black;
     padding: 10px;
   }
   #winModalImg {
@@ -50,13 +50,22 @@
     width: 80%;
   }
 
+  .shareButton {
+    background-color: rgb(145, 22, 145);
+    color: white;
+    border: 1px solid black;
+    box-shadow: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+  }
+
+  .shareButton:hover {
+    cursor: pointer;
+    color: black;
+  }
+
   @media screen and (max-width: 500px){
     #winModal {
         height: 70%
     }
-    .winButton {
-        height: 40px
-    }
 }
-
-// style share button later

@@ -90,7 +90,7 @@ const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="formBox">
+                        <div className="formBox button">
                             <button type="Submit" className="logInButton" disabled={disableButton()}>
                                 Log In
                             </button>
