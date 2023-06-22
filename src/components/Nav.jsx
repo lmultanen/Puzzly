@@ -19,17 +19,10 @@ const Nav = () => {
 
 export default Nav;
 
-// local storage for puzzly results:
-/*
-{completed: int, lastCompleted: int, streak: int, avgTime: int}
-- completed will be total Puzzly's completed. incremented by 1 after completing current day's Puzzly 
-- lastCompleted should be the ID of last Puzzly completed. 
--- After completing a puzzly, will run a method to check if user's lastCompleted puzzly ID is 1 less than current puzzly.
--- If so, will increment streak by 1. Else, set streak to 1 and set lastCompleted to current puzzly ID
-- streak will just be active puzzly streak
-- avgTime will be average time of puzzly solve times, rounded to nearest integer, in seconds.
--- will recalculate value after completing current day's puzzly by multiplying avgTime by completed (before incremented), adding current days time in seconds, then dividing and rounding to nearest int
-
-
-These above fields will likely also be stored in the User model sql table. Will need a method to convert local storage (if exists) to a user's profile after they sign up
-*/
+// after reworking nav bar by removing the Play tab and left postition puzzly, right positioning rules/leaderboard with icons
+// - flesh out rules page
+// - add front end validation to Sign up form; hook up back end modal as well
+// - then, should be ready to deploy and test on mobile
+// - seed a couple hundred images
+// - add a user seed file to .gitignore with admin permissions
+// ---- don't need to build out admin stuff until after launch
