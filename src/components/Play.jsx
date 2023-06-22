@@ -293,6 +293,7 @@ const Play = () => {
             window.localStorage.setItem('puzzlyHistory', JSON.stringify([]))
             setPuzzlyHistory([{puzzly: currentPuzzlyNum, time: window.localStorage.getItem('lastCompletedPuzzlyTime'), usedHint: usedHint}])
             window.localStorage.setItem('puzzlyStreak',0);
+            window.localStorage.setItem('averagePuzzlyTime',window.localStorage.getItem('lastCompletedPuzzlyTime'));
         }
     }
 

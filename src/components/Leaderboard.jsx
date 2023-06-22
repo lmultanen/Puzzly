@@ -1,7 +1,7 @@
 import  React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentPuzzlyNumber } from "../store/slices/imageSlice.js";
-import { fetchFriendsList, fetchUser, logout } from "../store/slices/userSlice.js";
+import { fetchFriendsList, fetchUser, logout, addLocalPuzzlyResults } from "../store/slices/userSlice.js";
 import LogInModal from "./LogInModal.jsx";
 import SignUpModal from "./SignUpModal.jsx";
 import Toastify from 'toastify-js';
@@ -32,6 +32,21 @@ const Leaderboard = () => {
     },[])
 
     useEffect(() => {
+        const localPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
+        if (userState.isLoggedIn && localPuzzlyHistory.length && currentPuzzlyNum) {
+            window.localStorage.setItem('puzzlyStreak',0);
+            window.localStorage.setItem('averagePuzzlyTime',window.localStorage.getItem('lastCompletedPuzzlyTime'));
+            dispatch(addLocalPuzzlyResults({
+                results: {
+                    userId: userState.userInfo.id,
+                    history: localPuzzlyHistory,
+                    currentPuzzly: currentPuzzlyNum
+                }
+            }))
+        }
+    },[userState.isLoggedIn, currentPuzzlyNum])
+
+    useEffect(() => {
         if (currentPuzzlyNum && 
            ( ((userState.status === "succeeded") && userState.isLoggedIn) || !userState.isLoggedIn )) {
             if (userState.isLoggedIn) {
@@ -47,7 +62,7 @@ const Leaderboard = () => {
         if (!userState.isLoggedIn) {
             setFillerList([1,2,3,4,5])
         }
-    },[currentPuzzlyNum,userState.isLoggedIn,friendsList.length])
+    },[currentPuzzlyNum,userState.isLoggedIn,friendsList.length,userState.userInfo.lastCompleted])
 
     const generateLeaderBoardLists = () => {
         let completed = friendsList.filter(friend => friend.lastCompleted === currentPuzzlyNum)
