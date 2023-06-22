@@ -144,9 +144,7 @@ User.authenticate = async ({ username, password }) => {
     return user;
 };
 
-// could add a variable with currentPuzzlyNumber? could then update other fields like currenttime, etc, hintUsed
-// or, just will send an object with all variables to update later in front end
-// or, will create separate addCurrentResult method and just use this one for loading local storage results
+// methods for adding local storage results
 User.prototype.addResult = async function (puzzlyNumber, time, usedHint) {
     // may want to first check that User doesn't already have a result for this puzzlyNumber
     await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, userId: this.id, usedHint: usedHint})
@@ -164,9 +162,10 @@ User.prototype.loadLocalStorageResults = async function (localResults) {
     const results = await this.getResultHistory();
     for (let localResult of localResults) {
         if (!results.filter(result => result.puzzlyNumber === localResult.puzzly).length) {
-            this.addResult(localResult.puzzly, localResult.time, localResult.usedHint ? true : false)
+            await this.addResult(localResult.puzzly, localResult.time, localResult.usedHint ? true : false)
         }
     }
+    return this;
 }
 
 User.prototype.getResultHistory = async function () {
@@ -177,7 +176,52 @@ User.prototype.getResultHistory = async function () {
     })
     return resultHistory;
 }
+// recalculates streak; called after loading local storage results
+User.prototype.calculateStreak = async function (currentPuzzlyNum) {
+    const orderedResults = await UserResult.findAll({
+        where: {
+            userId: this.id
+        },
+        order: [["puzzlyNumber", "DESC"]]
+    })
+    if (!orderedResults.length) {
+        return await User.findByPk(this.id, {
+            attributes: {
+                exclude: ["password"]
+            }
+        });
+    }
+    this.lastTime = orderedResults[0].time;
+    this.lastCompleted = orderedResults[0].puzzlyNumber
+    // console.log(orderedResults[0].time,orderedResults[0].puzzlyNumber)
+    if (currentPuzzlyNum !== orderedResults[0].puzzlyNumber) {
+        this.completedStreak = 0;
+    }
+    else {
+        let streak = 1;
+        let puzzNum = currentPuzzlyNum-1;
+        for (let i=1; i<orderedResults.length; i++) {
+            if (orderedResults[i].puzzlyNumber === puzzNum) {
+                streak++;
+                puzzNum--;
+            }
+            else {
+                break;
+            }
+        }
+        this.completedStreak = streak
+    }
+    await this.save()
 
+    return await User.findByPk(this.id, {
+        attributes: {
+            exclude: ["password"]
+        }
+    });
+    // return this after updating streak field
+}
+
+// relies on streak field being up to date
 User.prototype.updateCurrentStreak = async function (currentPuzzlyNum) {
     if (this.lastCompleted === currentPuzzlyNum - 1) {
         this.completedStreak += 1;
@@ -206,6 +250,9 @@ User.prototype.addFriendByUsername = async function (username) {
     const friend = await User.findOne({
         where: {
             username: username.toLowerCase()
+        },
+        attributes: {
+            exclude: ["password"]
         }
     }); 
     if (friend) {
@@ -216,13 +263,20 @@ User.prototype.addFriendByUsername = async function (username) {
 // should be able to pass in friend model directly from front end
 // - if not, will refactor to pass in an id or username and find the User before removing
 User.prototype.removeFromFriendList = async function (friendId) {
-    const friendToRemove = await User.findByPk(friendId)
+    const friendToRemove = await User.findByPk(friendId, {
+        attributes: {
+            exclude: ["password"]
+        }
+    })
     await this.removeFriend(friendToRemove)
 }
 
 // might not even need this, can make sure to include User model as friend on front end and get that way
 User.prototype.getFriendsList = async function (){
     const selfWithFriends = await User.findByPk(this.id, {
+        attributes: {
+            exclude: ["password"]
+        },
         include: {
             model: User,
             as: "Friend"
@@ -233,6 +287,9 @@ User.prototype.getFriendsList = async function (){
 
 User.prototype.getFriendsPuzzlyResults = async function (puzzlyNumber) {
     const selfWithFriendsResults = await User.findByPk(this.id, {
+        attributes: {
+            exclude: ["password"]
+        },
         include: {
             model: User,
             as: "Friend",

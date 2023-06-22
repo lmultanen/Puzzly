@@ -64,7 +64,7 @@ const WinModal = ({
                     </thead>
                     <tbody>
                         <tr id="statsValues">
-                            <td>{completedPuzzlys}</td>
+                            <td>{completedPuzzlys ? completedPuzzlys : 1}</td>
                             <td>{streak ? streak : 1}</td>
                             <td>{convertSecsToMins(averageTime)}</td>
                         </tr>

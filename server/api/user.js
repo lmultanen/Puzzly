@@ -60,11 +60,10 @@ router.post('/addcurrentresult', async (req, res, next) => {
 router.post('/addlocalresults', async (req, res, next) => {
     try {
         const { results } = req.body
-        console.log(results)
         const user = await User.findByPk(results.userId);
         const updated = await user.loadLocalStorageResults(results.history)
-        
-        res.send({success: 'success'})
+        const updatedWithStreak = await updated.calculateStreak(results.currentPuzzly)
+        res.send(updatedWithStreak)
     } catch (error) {
         next(error)
     }

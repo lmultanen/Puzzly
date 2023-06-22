@@ -55,8 +55,6 @@ export const addCurrentPuzzlyResult = createAsyncThunk(
 export const addLocalPuzzlyResults = createAsyncThunk(
     'user/addLocalPuzzlyResults',
     async({ results }) => {
-        console.log(results)
-        // console.log('C')
         const { data } = await axios.post('/api/user/addlocalresults', {results})
         return data;
     }
@@ -126,8 +124,10 @@ const userSlice = createSlice({
                 state.status = 'succeeded'
                 state.userInfo = action.payload
             })
-            .addCase(addLocalPuzzlyResults.fulfilled, (state) => {
+            .addCase(addLocalPuzzlyResults.fulfilled, (state, action) => {
                 state.status = 'succeeded'
+                state.userInfo = action.payload
+                // may need to prune password somehow
             })
     }
 })

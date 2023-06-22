@@ -39,22 +39,10 @@ const Play = () => {
     const loggedIn = useSelector(isLoggedStatus)
     const user = useSelector(state => state.user.userInfo)
 
+    const [localStatsAdded, setLocalStatsAdded] = useState(false)
 
-    // ADD IN SOME USER STATES
-    // WILL MAINLY BE FOR STAT KEEPING PURPOSES
-    // WILL NEED TO CREATE NEW THUNKS AFTER
-    // - thunk for saving current puzzly stat
-    // - thunk for adding localStorage stats to user profile
 
-    // will need to set this with a user 'get puzzly history' if user logged in later
-    // - will also have a 'save puzzly history' for new users who log in with a local history
-    // - after that, should reset the saved history
 
-    // NEED TO ADDRESS THE LOADING A BIT BETTER
-    // LOADS APPROPRIATELY ON BACK END, BUT NEED TO CLEAN UP FRONT END STUFF
-    // COULD BE A MATTER OF MAKING SURE THAT CALL THE DISPATCH IN ANOTHER SPOT
-
-    // SOMETHING ELSE TO CONSIDER; MAY NEED TO UPDATE THE LOCAL STORAGE STATS EVEN WHEN USER COMPLETES THE PUZZLY
     const [puzzlyHistory, setPuzzlyHistory] = useState([]);
     const [averageTime, setAverageTime] = useState(null);
     const [streak, setStreak] = useState(null);
@@ -71,10 +59,10 @@ const Play = () => {
     },[])
 
     useEffect(() => {
-        if (loggedIn && puzzlyHistory.length) {
+        if (loggedIn && puzzlyHistory.length && currentPuzzlyNum) {
             addSavedStatsToUser()
         }
-    },[loggedIn, puzzlyHistory.length])
+    },[loggedIn, puzzlyHistory.length, currentPuzzlyNum])
 
     useEffect(() => {
         if (currentPuzzlyNum && totalPuzzlyCount) {
@@ -101,14 +89,9 @@ const Play = () => {
 
         if (imgUrl && currentPuzzlyNum) {
 
-            // check user status below
-            // if loggedIn, then check userInfo to set the values
-            // else, do below
-
             // SUPER MESSY; CAN DEFINITELY REFACTOR
 
             if (loggedIn) {
-                console.log('logged in')
                 if (currentPuzzlyNum === user.lastCompleted) {
                     setTimer(user.lastTime)
                     setCompleted(true)
@@ -117,13 +100,11 @@ const Play = () => {
 
                     setAverageTime(user.avgTime)
                     setStreak(user.completedStreak)
-                    // unsure how to set puzzly history or if need to here...
-                    // don't think need to, just needed the amount of completed in a row
                     setSavedGrid(completedGrid)
                     openWinModal()
                 }
                 else if (currentPuzzlyNum === lastSavedCompleted) {
-                    dispatch(addLocalPuzzlyResults())
+                    addSavedStatsToUser();
                     setTimer(user.lastTime)
                     setCompleted(true)
                     setAverageTime(user.avgTime)
@@ -167,7 +148,8 @@ const Play = () => {
                 const savedPuzzlyStreak = Number(window.localStorage.getItem('puzzlyStreak'));
                 setStreak(savedPuzzlyStreak)
                 if (lastSavedCompleted === currentPuzzlyNum) {
-                    setTimer(Number(window.localStorage.getItem('lastCompletedPuzzlyTime')))
+                    const lastTime = Number(window.localStorage.getItem('lastCompletedPuzzlyTime'))
+                    setTimer(lastTime)
                     setCompleted(true)
         
                     const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
@@ -175,7 +157,7 @@ const Play = () => {
     
                     const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
                     const savedPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
-                    setAverageTime(savedAverageTime);
+                    setAverageTime(savedPuzzlyHistory.length ? savedAverageTime : lastTime);
                     setPuzzlyHistory(savedPuzzlyHistory)
                     setSavedGrid(completedGrid)
                     openWinModal()
@@ -298,13 +280,19 @@ const Play = () => {
     }
 
     const addSavedStatsToUser = () => {
-        if (puzzlyHistory.length) {
+        if (puzzlyHistory.length && !localStatsAdded) {
+            setLocalStatsAdded(true)
+
             dispatch(addLocalPuzzlyResults({
                 results: {
                     userId: user.id,
-                    history: puzzlyHistory
+                    history: puzzlyHistory,
+                    currentPuzzly: currentPuzzlyNum
                 }
             }))
+            window.localStorage.setItem('puzzlyHistory', JSON.stringify([]))
+            setPuzzlyHistory([])
+            window.localStorage.setItem('puzzlyStreak',0);
 
             // CAN CLEAR PUZZLY HISTORY HERE
             // ALSO, ADD A CALCULATE STREAK METHOD TO USER MODEL
@@ -317,7 +305,6 @@ const Play = () => {
         if (loggedIn) {
 
             if (user.lastCompleted !== currentPuzzlyNum) {
-                // make a thunk and pass in all relevant info, such as puzzly number, time, usedHint, etc
                 dispatch(addCurrentPuzzlyResult({
                     result: {
                         userId: user.id,
@@ -326,25 +313,16 @@ const Play = () => {
                         usedHint
                     }
                 }));
-
-                //  may think about clearing other stats here? tbd
                 window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
                 window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
-                window.localStorage.setItem('currentPuzzlyTimer','0')
-                // window.localStorage
+                window.localStorage.setItem('averagePuzzlyTime', `${timer}`)
                 window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
                 window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
                 window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
-
-                // maybe could just load here, if see puzzlyHistory.length?
-                // that way, can make sure to reset puzzlyHistory
-                // then, maybe just set streak to 1?
-                // addSavedStatsToUser();
             }
         }
         else {
             if (!puzzlyHistory.filter(puzzly => puzzly.puzzly === currentPuzzlyNum).length){
-                // might only do this if no user logged in. If user, then invoke different method to create new table entry for UserTime table
                 const historyLength = puzzlyHistory.length;
                 const updatedPuzzlyHistory = [...puzzlyHistory, {puzzly: currentPuzzlyNum, time: timer}]
                 setPuzzlyHistory(updatedPuzzlyHistory);
@@ -381,20 +359,7 @@ const Play = () => {
     const checkWinCondition = () => {
         if (checkTilesSequenced()) {
             setCompleted(true);
-            // at later time, will look to update user's db
-            // before that, can look to create some new stats as written out in a different component
-
             updateStats();
-
-            // window.localStorage.setItem('lastCompletedPuzzly',`${currentPuzzlyNum}`);
-            // window.localStorage.setItem('lastCompletedPuzzlyTime',`${timer}`)
-            // window.localStorage.setItem('currentPuzzlyTimer','0')
-            // window.localStorage.setItem('completedPuzzlyGrid',JSON.stringify(savedGrid))
-            // window.localStorage.setItem('savedPuzzlyGrid',JSON.stringify(baseGrid))
-            // window.localStorage.setItem('sequencedPuzzlyTiles',JSON.stringify([]));
-
-            // - COULD CHECK TO SEE IF A USER EXISTS IN STATE FIRST
-
             openWinModal()
         } else {
             if (!errorPopup) {
@@ -446,7 +411,7 @@ const Play = () => {
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
              <div id="playPage">
-                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak}/> : null}
+                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={loggedIn ? user.lastTime : timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak}/> : null}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
                     {!completed ? <p id="hint" onClick={openHintModal}>Hint?</p> : null}
@@ -463,3 +428,10 @@ const Play = () => {
 }
 
 export default Play;
+
+
+// TODO: 
+// - add method on User model to calculate streak after completing loading from local storage
+// - then, can reset puzzly history to empty array and other stats
+// - after that, can start working on the adding friend functionality of leaderboard and displaying friend times
+// - then, just a couple extra cosmetic things and fleshing out other pages. could make a settings tab for dark mode, wiggle toggle
