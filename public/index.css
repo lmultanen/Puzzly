@@ -437,7 +437,7 @@
   min-width: 75%;
 }
 .leaderboardTable {
-  width: 100%;
+  width: 300px;
 }
 #logInSignUpDiv {
   margin: 1.5em;
@@ -504,8 +504,8 @@ tr.leaderboardRow {
 }
 #friendListModal {
   padding-top: 50px;
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: 10px;
+  padding-right: 10px;
   z-index: 1;
   width: 350px;
   height: 400px;
@@ -528,21 +528,58 @@ tr.leaderboardRow {
   height: 350px;
 }
 #currentFriendList {
-  min-height: 100px;
-  max-height: 250px;
+  height: 275px;
   overflow: hidden;
   overflow-y: scroll;
+  overflow-x: scroll;
   text-align: left;
   width: 60%;
   margin-top: 25px;
   scrollbar-color: grey;
   border: 1px black solid;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px;
   border-radius: 10px;
   box-shadow: 1px 1px 1px grey;
+  list-style-type: none;
 }
 #addFriendContainer {
   width: 50%;
   text-align: center;
+}
+.currentFriend {
+  padding-right: 10px;
+  margin-bottom: 1em;
+}
+.removeFriendButton {
+  margin-right: 10px;
+  padding: 1px 3px;
+  background: crimson;
+  color: white;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  border-radius: 2px;
+  cursor: pointer;
+  opacity: 50%;
+  font-size: smaller;
+}
+.removeFriendButton:hover {
+  opacity: 100%;
+}
+.addFriendForm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 150px;
+  margin: auto;
+  margin-top: 2em;
+}
+.addFriendForm div {
+  margin-bottom: 2em;
+}
+.buttonDiv {
+  width: 100%;
+}
+.addFriendButton:hover {
+  cursor: pointer;
 }

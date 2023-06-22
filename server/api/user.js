@@ -87,7 +87,6 @@ router.put('/addfriend', async (req, res, next) => {
         const user = await User.byToken(req.headers.authorization)
         await user.addFriendByUsername(req.body.username)
         const updated = await user.getFriendsList()
-        // console.log()
         res.send({username: req.body.username, friends: updated})
         // may want to resend full friend list
     } catch (error) {
@@ -102,7 +101,8 @@ router.put('/removefriend/:friendid', async (req, res, next) => {
     try {
         const user = await User.byToken(req.headers.authorization)
         await user.removeFromFriendList(req.params.friendid)
-        res.send("success")
+        const friends = await user.getFriendsList();
+        res.send(friends)
     } catch (error) {
         next(error)
     }

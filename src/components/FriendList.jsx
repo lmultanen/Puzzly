@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import ReactDom from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addFriend, fetchFriendsList, getError, getNewFriendName, resetNewFriendName, setError } from "../store/slices/userSlice";
+import { addFriend, fetchFriendsList, getError, getNewFriendName, removeFriend, resetNewFriendName, setError } from "../store/slices/userSlice";
 import Toastify from 'toastify-js';
 
 const FriendList = ({ setShowFriendListModal }) => {
@@ -76,6 +76,13 @@ const FriendList = ({ setShowFriendListModal }) => {
         // could do from redux store, but might be ugly
     }
 
+    const removeFriendHandler = (friendId, name) => {
+        // dispatch remove friend handler
+        console.log('removing friend')
+        dispatch(removeFriend({friendId}))
+        Toastify({text: `Removed ${name} from friend list.`, duration:2000 ,gravity: "top", position: "center", backgroundColor: "red"}).showToast();
+    }
+
     return ReactDom.createPortal(
         <div className="friendListModalContainer" ref={modalRef} onClick={closeModal}>
             <div id="friendListModal">
@@ -86,8 +93,10 @@ const FriendList = ({ setShowFriendListModal }) => {
                         <ul id="currentFriendList">
                             {friendsList.map((friend,idx) => (
                                 <li className="currentFriend" key={idx}>
+                                    <span className="removeFriendButton" onClick={() => removeFriendHandler(friend.id,friend.username)}>
+                                        X
+                                    </span>
                                     {friend.username}
-                                    {/* add button to remove them */}
                                 </li>
                             ))}
                         </ul>
@@ -97,16 +106,17 @@ const FriendList = ({ setShowFriendListModal }) => {
                 <div id="addFriendContainer">
                     <h4>Add Friend</h4>     
                     <form type="submit" className="addFriendForm" onSubmit={handleSubmit}>
-                            <label htmlFor="username" className="username label">
-                                Username:
+                            <label style={{ fontSize: "small"}} htmlFor="username" className="username label">
+                                Input Username:
                             </label>
                             <div className="formInput">
                                 <input type="text" name="username" placeholder="username" className="textBox" autoFocus="on" required minLength={4} onChange={handleChange('username')}/>
                             </div>
-                        
-                        <button type="submit" className="addFriendButton" disabled={disableButton()}>
-                            Add Friend
-                        </button>
+                        <div className="buttonDiv">
+                            <button type="submit" className="addFriendButton" disabled={disableButton()}>
+                                Add Friend
+                            </button>
+                        </div>
                         {/* work on functionality, then on styling */}
                     </form>
                     

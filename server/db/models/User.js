@@ -285,10 +285,12 @@ User.prototype.getFriendsList = async function (){
         },
         include: {
             model: User,
-            as: "Friend"
+            as: "Friend",
+            attributes: {
+                exclude: ["password"]
+            }
         }
     })
-    console.log(selfWithFriends.Friend)
 
     return selfWithFriends.Friend;
 }

@@ -88,6 +88,19 @@ export const addFriend = createAsyncThunk(
     }
 )
 
+export const removeFriend = createAsyncThunk(
+    'user/removeFriend',
+    async ({ friendId }) => {
+        const token = window.localStorage.getItem('puzzlyToken');
+	    if (token) {
+            const { data } = await axios.put(`/api/user/removefriend/${friendId}`,{},{
+                headers: { authorization: token },
+            })
+            return data
+        }
+    }
+)
+
 
 
 
@@ -177,6 +190,10 @@ const userSlice = createSlice({
                 state.error = "User Not Found"
             })
             .addCase(fetchFriendsList.fulfilled, (state, action) => {
+                state.status = 'succeeded'
+                state.friends = action.payload
+            })
+            .addCase(removeFriend.fulfilled, (state, action) => {
                 state.status = 'succeeded'
                 state.friends = action.payload
             })
