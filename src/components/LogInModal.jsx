@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import ReactDom from "react-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchUser, getError, loginUser, setError } from "../store/slices/userSlice";
+import { fetchFriendsList, fetchUser, getError, loginUser, setError } from "../store/slices/userSlice";
 import Toastify from 'toastify-js';
 
 const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
@@ -17,6 +17,7 @@ const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
     useEffect(() => {
         if (token) {
             dispatch(fetchUser())
+            dispatch(fetchFriendsList())
             setShowLogInModal(false)
             Toastify({text: `Welcome back, ${login.username}!`, duration:2000 ,gravity: "top", position: "right", backgroundColor: "dodgerBlue"}).showToast();
         }

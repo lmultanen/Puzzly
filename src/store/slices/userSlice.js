@@ -126,6 +126,7 @@ const userSlice = createSlice({
 			state.isLoggedIn = false;
 			state.isAdmin = false;
 			state.token = false;
+            state.friends = [];
 		},
         setError: (state) => {
 			state.error = null;

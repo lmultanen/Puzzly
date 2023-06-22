@@ -1,7 +1,7 @@
 import  React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentPuzzlyNumber } from "../store/slices/imageSlice.js";
-import { fetchUser, logout } from "../store/slices/userSlice.js";
+import { fetchFriendsList, fetchUser, logout } from "../store/slices/userSlice.js";
 import LogInModal from "./LogInModal.jsx";
 import SignUpModal from "./SignUpModal.jsx";
 import Toastify from 'toastify-js';
@@ -17,17 +17,16 @@ const Leaderboard = () => {
     const [readyToRender, setReadyToRender] = useState(false);
 
     const userState = useSelector(state => state.user)
-
-    // will change this to a use selector later
-    const [friendsList, setFriendsList] = useState([])
+    const friendsList = useSelector(state => state.user.friends)
     const [fillerList, setFillerList] = useState([1,2,3,4,5])
-
-    // add in some toast pop ups for logging in, logging out, etc
+    const [completedList, setCompletedList] = useState([])
+    const [uncompletedList, setUncompletedList] = useState([])
 
     useEffect(() => {
         const token = window.localStorage.getItem('puzzlyToken');
         if (token) {
             dispatch(fetchUser())
+            dispatch(fetchFriendsList())
         }
         dispatch(fetchCurrentPuzzlyNumber())
     },[])
@@ -41,14 +40,25 @@ const Leaderboard = () => {
                     filler.push(5-i)
                 }
                 setFillerList(filler)
-            }
+                generateLeaderBoardLists()
+            }   
             setReadyToRender(true)
         }
         if (!userState.isLoggedIn) {
             setFillerList([1,2,3,4,5])
         }
-        // may also want to wait for userState useSelector to return before this
-    },[currentPuzzlyNum,userState.isLoggedIn])
+    },[currentPuzzlyNum,userState.isLoggedIn,friendsList.length])
+
+    const generateLeaderBoardLists = () => {
+        let completed = friendsList.filter(friend => friend.lastCompleted === currentPuzzlyNum)
+        let uncompleted = friendsList.filter(friend => friend.lastCompleted !== currentPuzzlyNum)
+        userState.userInfo.lastCompleted === currentPuzzlyNum ? completed.push(userState.userInfo) : uncompleted.unshift(userState.userInfo)
+        // Could choose to trim results, but for now, showing all
+        // Choosing to not sort uncompleted for now, so that user stays near the top
+        completed.sort((a,b) => (a.lastTime - b.lastTime))
+        setCompletedList(completed)
+        setUncompletedList(uncompleted)
+    }
 
     const openLogInModal = () => {
         setShowLogInModal(true)
@@ -65,7 +75,6 @@ const Leaderboard = () => {
     const logoutHandler = () => {
         Toastify({text: `Successfully logged out ${userState.userInfo.username}!`, duration:2000 ,gravity: "bottom", position: "center", backgroundColor: "dodgerBlue"}).showToast();
         dispatch(logout())
-        // likely some other cleanup once having a friends list state
     }
 
     function str_pad_left(string, pad, length) {
@@ -97,7 +106,7 @@ const Leaderboard = () => {
                     <thead>
                         <tr id="leaderboardHeaderRow">
                             <th className="leaderboardHeader">Pos</th>
-                            <th className="leaderboardHeader">Name</th>
+                            <th className="leaderboardHeader leaderboardName">Name</th>
                             <th className="leaderboardHeader">Time</th>
                         </tr>
                     </thead>
@@ -106,7 +115,7 @@ const Leaderboard = () => {
                             <tr className="leaderboardRow" key={idx}>
                                 <td className="leaderboardPlace">*</td>
                                 <td className="leaderboardName">------</td>
-                                <td className="leaderboardTime">----</td>
+                                <td className="leaderboardTime">------</td>
                             </tr>
                         ))}
                     </tbody>
@@ -127,28 +136,34 @@ const Leaderboard = () => {
             </div>
             :
             <div className="leaderboard">
-                <table className="leaderboardTable loggedOut">
+                <table className="leaderboardTable">
                     <thead>
                         <tr id="leaderboardHeaderRow">
                             <th className="leaderboardHeader">Pos</th>
-                            <th className="leaderboardHeader">Name</th>
+                            <th className="leaderboardHeader leaderboardName">Name</th>
                             <th className="leaderboardHeader">Time</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {/* filler working appropriately */}
-                            <tr className="leaderboardRow">
-                                <td className={userState.userInfo.lastCompleted !== currentPuzzlyNum ? "leaderboardPlace unfinished" :"leaderboardPlace"}>{userState.userInfo.lastCompleted === currentPuzzlyNum ? "1" : "*"}</td>
-                                <td className={userState.userInfo.lastCompleted !== currentPuzzlyNum ? "leaderboardName unfinished" :"leaderboardName"}>{`${userState.userInfo.username} (you)`}</td>
-                                <td className={userState.userInfo.lastCompleted !== currentPuzzlyNum ? "leaderboardTime unfinished" :"leaderboardTime"}>{userState.userInfo.lastCompleted === currentPuzzlyNum ? convertSecsToMins(userState.userInfo.lastTime) : "----"}</td>
+                    <tbody className={friendsList.length > 10 ? "tableBorder" : ""}>
+                        {completedList.map((user, idx) => (
+                            <tr className="leaderboardRow" key={idx}>
+                                <td className="leaderboardPlace">{idx+1}</td>
+                                <td className="leaderboardName">{user.username === userState.userInfo.username ? `${user.username} (you)` : user.username}</td>
+                                <td className="leaderboardTime">{`${convertSecsToMins(user.lastTime)}${user.usedHint ? '*' : ''}`}</td>
                             </tr>
-                            {/* map friends list here */}
-                            {/* in truth, should insert player into friends list */}
+                        ))}
+                        {uncompletedList.map((user, idx) => (
+                            <tr className="leaderboardRow" key={idx}>
+                                <td className="leaderboardPlace unfinished">*</td>
+                                <td className="leaderboardName unfinished">{user.username === userState.userInfo.username ? `${user.username} (you)` : user.username}</td>
+                                <td className="leaderboardTime unfinished">-------</td>
+                            </tr>
+                        ))}
                         {fillerList.map((val, idx) => (
                             <tr className="leaderboardRow" key={idx}>
-                                <td className="leaderboardPlace">*</td>
-                                <td className="leaderboardName">------</td>
-                                <td className="leaderboardTime">----</td>
+                                <td className="leaderboardPlace filler">*</td>
+                                <td className="leaderboardName filler">------</td>
+                                <td className="leaderboardTime filler">-------</td>
                             </tr>
                         ))}
                     </tbody>
@@ -156,8 +171,6 @@ const Leaderboard = () => {
                 {showFriendListModal ? <FriendList setShowFriendListModal={setShowFriendListModal}/> : null}
                 <button id="friendsListButton" type="click" onClick={openFriendListModal}>
                     Friends List
-                    {/* will probably make a button */}
-                    {/* spawn new modal to view friends list and have ability to add more */}
                 </button>
 
                 <br/>
@@ -173,11 +186,3 @@ const Leaderboard = () => {
 }
 
 export default Leaderboard;
-
-// once user log in/log out set up, build out the Leaderboard functionality
-// - will need to fetch user friends and their times
-// - add an "add friends" button below that pulls up a modal
-// --- opens a username search bar, spawns a toast when adding successful
-// - could add a log out button as well somewhere on the page
-
-// could add a render to render bool here too; otherwise flashes for a second

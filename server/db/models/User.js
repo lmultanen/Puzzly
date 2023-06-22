@@ -195,6 +195,7 @@ User.prototype.calculateStreak = async function (currentPuzzlyNum) {
     this.lastCompleted = orderedResults[0].puzzlyNumber
     if (currentPuzzlyNum !== orderedResults[0].puzzlyNumber) {
         this.completedStreak = 0;
+        this.usedHint = false; // overwriting old usedHint value I think
     }
     else {
         let streak = 1;
@@ -234,7 +235,7 @@ User.prototype.updateCurrentStreak = async function (currentPuzzlyNum) {
 
 User.prototype.addCurrentResult = async function (puzzlyNumber, time, usedHint) {
     await UserResult.create({puzzlyNumber: puzzlyNumber, time: time, usedHint: usedHint, userId: this.id})
-    let newAvgTime = Math.floor((this.avgTime*this.completed + time) / (this.completed + 1))
+    let newAvgTime = Math.floor(((this.avgTime*this.completed) + time) / (this.completed + 1))
     this.avgTime = newAvgTime
     await this.updateCurrentStreak(puzzlyNumber)
     this.completed += 1;
@@ -277,7 +278,6 @@ User.prototype.removeFromFriendList = async function (friendId) {
     await this.removeFriend(friendToRemove)
 }
 
-// might not even need this, can make sure to include User model as friend on front end and get that way
 User.prototype.getFriendsList = async function (){
     const selfWithFriends = await User.findByPk(this.id, {
         attributes: {
@@ -313,6 +313,8 @@ User.prototype.getFriendsPuzzlyResults = async function (puzzlyNumber) {
     })
     // this won't give it in easily accessed array, but can dive into each and grab
     // may then later want to sort these results for display purposes, but could always do that elsewhere
+    // might not even need this for initial leaderboard; can just check all friends last stats
+    // -- but if want to look back on other leaderboards, will need to refactor later
     return selfWithFriendsResults;
 }
 
