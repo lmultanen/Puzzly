@@ -38,7 +38,7 @@ const WinModal = ({
     }
 
     const shareButtonClickHandler = () => {
-        navigator.clipboard.writeText(`Completed${usedHint ? '*' : ''} Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}!\n(add emoji or something)\nFollow link to play: puzzly.us`);
+        navigator.clipboard.writeText(`Completed Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}${usedHint ? '*' : ''}!\nFollow link to play: puzzly.us 🧩 `);
         Toastify({text: "Copied to clipboard!", duration:1000 ,gravity: "bottom", position: "right", backgroundColor: "dodgerBlue"}).showToast();
     }
 
@@ -48,7 +48,7 @@ const WinModal = ({
                 <button className="closeModal" onClick={() => setShowWinModal(false)}>X</button>
                 <h2 id="winCongrats">Congratulations!</h2>
                 <div id="winMessage">
-                    You completed{usedHint ? '*' : ''} Puzzly {puzzlyNumber} in {convertSecsToMins(time)}!
+                    You completed Puzzly {puzzlyNumber} in {convertSecsToMins(time)}{usedHint ? '*' : ''}!
                 </div>
                 <table id="winStatisticsTable">
                     <tbody>

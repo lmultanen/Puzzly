@@ -16,14 +16,10 @@ const Nav = () => {
 
 export default Nav;
 
-// - add front end validation to Sign up form; hook up back end modal as well
-// - flesh out rules page
 // - make a logo to put on the home page
-// - flesh out the share text further
 // - then, should be ready to deploy and test on mobile
 // ---- check if need to disable hover functionality on mobile devices
 // - seed a couple hundred images
-// - add a user seed file to .gitignore with admin permissions
 // - could add a play link on leaderboard page for signed in users
 // --- if they haven't played current day's puzzly, show them a play link in time column
 // ---- don't need to build out admin stuff until after launch
