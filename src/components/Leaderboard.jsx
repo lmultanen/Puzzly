@@ -37,7 +37,7 @@ const Leaderboard = () => {
 
     useEffect(() => {
         const localPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
-        if (userState.isLoggedIn && localPuzzlyHistory.length && currentPuzzlyNum) {
+        if (userState.isLoggedIn && localPuzzlyHistory?.length && currentPuzzlyNum) {
             window.localStorage.setItem('puzzlyStreak',0);
             window.localStorage.setItem('averagePuzzlyTime',window.localStorage.getItem('lastCompletedPuzzlyTime'));
             dispatch(addLocalPuzzlyResults({

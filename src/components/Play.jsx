@@ -233,11 +233,11 @@ const Play = () => {
     }, [remainingTiles.length, sequencedTiles.length, sequencedTiles])
 
     const grabSavedTile = (grid, tileBank) => {
-        if (tileBank.length) {
+        if (tileBank?.length) {
             return tileBank[0];
         }
         else {
-            return grid.flat().map(tile => tile)[0]
+            return grid?.flat().map(tile => tile)[0]
         }
     }
 

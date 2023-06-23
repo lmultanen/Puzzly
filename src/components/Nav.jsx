@@ -19,6 +19,8 @@ export default Nav;
 // - then, should be ready to deploy and test on mobile
 // ---- check if need to disable hover functionality on mobile devices
 
+
+// - small bug if users log in to account on different device: won't display solve grid, stuck in loading
 // - could add a play link on leaderboard page for signed in users
 // --- if they haven't played current day's puzzly, show them a play link in time column
 // ---- don't need to build out admin stuff until after launch

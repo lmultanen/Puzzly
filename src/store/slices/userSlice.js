@@ -102,8 +102,6 @@ export const removeFriend = createAsyncThunk(
 
 
 
-
-
 const initialState = {
 	userInfo: {},
     status: 'idle',
