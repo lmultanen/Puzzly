@@ -31,7 +31,6 @@ const SolveGrid = ({
     useEffect(() => {
         if (updateGridValue && swapCoords) {
             grid[swapCoords.row][swapCoords.col] = updateGridValue;
-            // bubble up grid here
             bubbleUpGrid(grid)
             setGrid(grid)
             setSelected(null)
@@ -40,7 +39,6 @@ const SolveGrid = ({
     },[updateGridValue])
 
     useEffect(() => {
-        // just want to make sure grid not clickable when puzzly completed
     },[completed])
 
     useEffect(() => {
@@ -78,7 +76,6 @@ const SolveGrid = ({
                 setSwapCoords(null);
             } else {
                 if(e.target.dataset.tileId != 0) {
-                    // console.log(e.target.dataset.tileId )
                     setSelected({div: e.target, tile: grid[rowId][colId]});
                     bubbleUpSelected({div: e.target, tile: grid[rowId][colId]});
                     setSwapCoords({row: rowId, col: colId});
@@ -92,7 +89,6 @@ const SolveGrid = ({
             {grid?.length ? grid.map((row,rowId) => (
                 <div className="solveGridRow" key={rowId}>
                     {row.map((col,colId) => (
-                        // may ultimately move this div into separate componenet
                         <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''} ${darkMode ? "darkMode" : ""}`} key={colId} data-tile-id={col?.id ? col.id : 0} onClick={onClickHandler(rowId,colId)}>
                             {col?.id ? 
                                 <img style= {{scale: "4",position: "relative", left: `${150 - col.colId*100}%`, top: `${150 - col.rowId*100}%`}} src={imgUrl} data-tile-id={col?.id ? col.id : 0}/> 

@@ -141,8 +141,8 @@ const Leaderboard = () => {
                 </table>
                 
                 <div id="logInSignUpDiv">
-                    {showLogInModal ? <LogInModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal}/> : null}
-                    {showSignUpModal ? <SignUpModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal}/> : null}
+                    {showLogInModal ? <LogInModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal} darkMode={darkMode}/> : null}
+                    {showSignUpModal ? <SignUpModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal} darkMode={darkMode}/> : null}
                     <div className={darkMode ? "logInLink darkMode" : "logInLink"} onClick={openLogInModal}>
                         Log In
                     </div>
@@ -187,13 +187,12 @@ const Leaderboard = () => {
                         ))}
                     </tbody>
                 </table>
-                {showFriendListModal ? <FriendList setShowFriendListModal={setShowFriendListModal}/> : null}
+                {showFriendListModal ? <FriendList setShowFriendListModal={setShowFriendListModal} darkMode={darkMode}/> : null}
                 <button id="friendsListButton" type="click" onClick={openFriendListModal}>
                     Friends List
                 </button>
 
                 <br/>
-                {/* look for a nice log out icon, like exiting door */}
                 <button id="logOutButton" className={darkMode ? "darkMode" : ""} type="click" onClick={logoutHandler}>
                     Log Out
                 </button>

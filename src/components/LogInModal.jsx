@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchFriendsList, fetchUser, getError, loginUser, setError } from "../store/slices/userSlice";
 import Toastify from 'toastify-js';
 
-const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
+const LogInModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
     const dispatch = useDispatch();
     const [login, setLogin] = useState({
         username: '',
@@ -68,7 +68,7 @@ const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
 
     return ReactDom.createPortal(
         <div className="logInModalContainer" ref={modalRef} onClick={closeModal}>
-            <div id="logInModal">
+            <div id="logInModal" className={darkMode ? "darkMode" : ""}>
                 <button className="closeModal" onClick={() => setShowLogInModal(false)}>X</button>
                 <div className="logInContainer">
                     <form onSubmit={handleSubmit} autoComplete="on">
@@ -98,7 +98,7 @@ const LogInModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                     </form>
                 </div>
                 <div className="switchModalDiv">
-                    Don't have an account? <div className="signUpLink" onClick={switchModal}>Sign Up</div> here!
+                    Don't have an account? <div  className={darkMode ? "signUpLink darkMode" : "signUpLink"} onClick={switchModal}>Sign Up</div> here!
                 </div>
             </div>
         </div>,

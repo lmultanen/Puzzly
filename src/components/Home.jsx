@@ -24,18 +24,10 @@ const Home = () => {
     },[currentPuzzlyNum])
     // should see what happens when no local storage for anything
 
-    // could grab local storage for lastCompletedPuzzly
-    // based on that and fetching currentPuzzlyNum, could either display a play button or not
-
-    // similar to wordle, could change the home page based on whether it was done or not
-    // could also change the button from "Play" to "See Puzzly"
-
     return(
         (readyToRender && currentPuzzlyNum) ?
          (currentPuzzlyNum !== lastLocalCompleted) ?
             <div className="home-container">
-                {/* <div className="nav-buffer"/> */}
-                {/* <h2>Placeholder home page. Will later add a couple buttons (at least), one of which takes users to a page or opens a popup for the Rules, and the other takes users to the 'Play' page, where they will be able to solve the day's Puzzly.</h2> */}
                 <h1>
                     {`Puzzly #${currentPuzzlyNum}`}
                 </h1>
@@ -57,9 +49,6 @@ const Home = () => {
                 <Link className="homeLink" to="/play">
                     <button className="playButton">See Puzzly</button>
                 </Link>
-                {/* <Link className="homeLink" to="/rules">
-                    <button className="rulesButton">Rules</button>
-                </Link> */}
             </div>
         :
         <></>
@@ -68,5 +57,3 @@ const Home = () => {
 }
 
 export default Home;
-
-// may want to check/load local puzzly history after sign in 

@@ -10,7 +10,8 @@ const WinModal = ({
         usedHint,
         completedPuzzlys,
         averageTime,
-        streak}) => {
+        streak,
+        darkMode}) => {
     const modalRef = useRef();
     const closeModal = (e) => {
         if (e.target === modalRef.current) {
@@ -43,7 +44,7 @@ const WinModal = ({
 
     return ReactDom.createPortal(
         <div className="winModalContainer" ref={modalRef} onClick={closeModal}>
-            <div id="winModal">
+            <div id="winModal"  className={darkMode ? "darkMode" : ""}>
                 <button className="closeModal" onClick={() => setShowWinModal(false)}>X</button>
                 <h2 id="winCongrats">Congratulations!</h2>
                 <div id="winMessage">

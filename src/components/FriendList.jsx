@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addFriend, fetchFriendsList, getError, getNewFriendName, removeFriend, resetNewFriendName, setError } from "../store/slices/userSlice";
 import Toastify from 'toastify-js';
 
-const FriendList = ({ setShowFriendListModal }) => {
+const FriendList = ({ setShowFriendListModal, darkMode }) => {
     const dispatch = useDispatch()
     const modalRef = useRef();
     const loginError = useSelector(getError)
@@ -22,10 +22,7 @@ const FriendList = ({ setShowFriendListModal }) => {
 
     const friendsList = useSelector(state => state.user.friends)
 
-    // need a thunk to fetch friends list, will call on open and recall when friend added/removed
-
     useEffect(() => {
-        // dispatch fetch friends list
         dispatch(fetchFriendsList())
     },[])
 
@@ -33,7 +30,6 @@ const FriendList = ({ setShowFriendListModal }) => {
         if (newFriendName) {
             Toastify({text: `Added ${newFriendName} to friend list!`, duration:2000 ,gravity: "top", position: "center", backgroundColor: "dodgerblue"}).showToast();
             dispatch(resetNewFriendName())
-            // clear form here
             setFriendForm({username: ''})
             document.querySelector("[name='username']").value = '';
         }
@@ -67,17 +63,13 @@ const FriendList = ({ setShowFriendListModal }) => {
             dispatch(addFriend({
                 friend: friendForm
             }))
-            // need to wait for if this successful or not
         }
         catch (error){
             next(error)
         }
-        // need to figure out how to only do this if dispatch successful
-        // could do from redux store, but might be ugly
     }
 
     const removeFriendHandler = (friendId, name) => {
-        // dispatch remove friend handler
         console.log('removing friend')
         dispatch(removeFriend({friendId}))
         Toastify({text: `Removed ${name} from friend list.`, duration:2000 ,gravity: "top", position: "center", backgroundColor: "red"}).showToast();
@@ -85,12 +77,12 @@ const FriendList = ({ setShowFriendListModal }) => {
 
     return ReactDom.createPortal(
         <div className="friendListModalContainer" ref={modalRef} onClick={closeModal}>
-            <div id="friendListModal">
+            <div id="friendListModal"  className={darkMode ? "darkMode" : ""}>
                 <button className="closeModal" onClick={() => setShowFriendListModal(false)}>X</button>
-                <div id="currentFriends">
+                <div id="currentFriends"  className={darkMode ? "darkMode" : ""}>
                     <h4>Current Friends</h4>
                     {friendsList.length ? 
-                        <ul id="currentFriendList">
+                        <ul id="currentFriendList"  className={darkMode ? "darkMode" : ""}>
                             {friendsList.map((friend,idx) => (
                                 <li className="currentFriend" key={idx}>
                                     <span className="removeFriendButton" onClick={() => removeFriendHandler(friend.id,friend.username)}>
@@ -117,7 +109,6 @@ const FriendList = ({ setShowFriendListModal }) => {
                                 Add Friend
                             </button>
                         </div>
-                        {/* work on functionality, then on styling */}
                     </form>
                     
                 </div>

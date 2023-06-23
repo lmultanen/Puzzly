@@ -14,11 +14,9 @@ const Settings = () => {
 
     useEffect(() => {
         if (darkMode) {
-            // document.getElementById("main").className = "darkMode"
             document.body.className = "darkMode"
         }
         else {
-            // document.getElementById("main").className = ""
             document.body.className = ""
         }
     }, [darkMode])
@@ -40,7 +38,3 @@ const Settings = () => {
 }
 
 export default Settings;
-
-// will need to change hint link color, likely to white
-// need to change grid color
-// also likely change the tile bank background color

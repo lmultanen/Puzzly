@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ReactDom from "react-dom";
 import { createUser, fetchUser, getError, setError, getFormInputAvailable, validateSignupForm } from "../store/slices/userSlice";
 
-const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
+const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
     const dispatch = useDispatch();
     const [signUp, setSignUp] = useState({
         username: '',
@@ -31,8 +31,6 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
             setShowSignUpModal(false)
         }
     },[token])
-
-    // MAYBE MAKE SIGN UP FORM A BIT LARGER IN CSS
 
     const handleChange = (prop) => (event) => {
 		const password = document.querySelector('input[name=password]');
@@ -76,9 +74,6 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
     const handleSubmit = (event) => {
 		event.preventDefault();
         dispatch(createUser({ signUp }))
-        // if successful, close modal
-        // if not successful, then send toast that unsuccessful
-		// dispatch(createUser({ signUp })) && navigate('/login');
 	};
     
     const modalRef = useRef();
@@ -97,12 +92,8 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
 
     return ReactDom.createPortal(
         <div className="signUpModalContainer" ref={modalRef} onClick={closeModal}>
-            <div id="signUpModal">
+            <div id="signUpModal" className={darkMode ? "darkMode" : ""}>
                 <button className="closeModal" onClick={() => setShowSignUpModal(false)}>X</button>
-                {/* <img id="logInModalImg" src={imgUrl}/> */}
-                {/* <div>Username:</div>
-                <div>Password:</div>
-                <div>Verify Password:</div> */}
                 <div className="signUpContainer">
                     <h2>New User Form</h2>
                     <p style={{fontStyle: "italic"}}>Input Username and Password to create account.</p>
@@ -157,7 +148,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal }) => {
                 </div>
                 <br/>
                 <div className="switchModalDiv">
-                    Already have an account? <div className="logInLink" onClick={switchModal}>Log In</div> here!
+                    Already have an account? <div className={darkMode ? "logInLink darkMode" : "logInLink"} onClick={switchModal}>Log In</div> here!
                 </div>
                 
             </div>

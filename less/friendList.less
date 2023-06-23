@@ -32,14 +32,22 @@
     color: black
   }
 
+  #friendListModal.darkMode {
+    background-color: rgb(48, 46, 46);
+    color: white
+  }
+
   #currentFriends {
     display: flex;
     flex-direction: column;
     width: 50%;
-    // justify-content: center;
     align-items: center;
     border-right: 1px dashed black;
     height: 350px;
+  }
+
+  #currentFriends.darkMode {
+    border-right: 1px dashed white;
   }
 
   #currentFriendList {
@@ -52,12 +60,14 @@
     margin-top: 25px;
     scrollbar-color: grey;
     border: 1px black solid;
-    // padding-top: 10px;
-    // padding-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
     box-shadow: 1px 1px 1px grey;
     list-style-type: none;
+  }
+
+  #currentFriendList.darkMode {
+    border: 1px white solid;
   }
 
   #addFriendContainer {

@@ -26,7 +26,7 @@
   position: relative;
 }
 .solveGridSquare.darkMode {
-  background-color: rgba(255, 255, 255, 0.664);
+  background-color: #b8b8b8;
   border: 1px black solid;
 }
 .solveGridSquare.selected {
@@ -104,6 +104,7 @@
   flex-direction: row;
   height: 60px;
   justify-content: space-between;
+  align-items: baseline;
   background-color: #911691;
   width: 100%;
 }
@@ -141,6 +142,7 @@
 * {
   margin: 0px;
   max-width: 100%;
+  font-family: 'Gill Sans';
 }
 #root {
   min-height: 100vh;
@@ -159,7 +161,8 @@
 }
 #tileBank {
   width: 100%;
-  height: 250px;
+  max-height: 250px;
+  min-height: 150px;
   border: 1px solid black;
   border-radius: 5px;
   display: flex;
@@ -167,9 +170,11 @@
   flex-wrap: wrap;
   justify-content: space-evenly;
   margin-bottom: 2em;
+  overflow: hidden;
+  overflow-y: scroll;
 }
 #tileBank.darkMode {
-  background-color: #9f9696;
+  background-color: #b8b8b8;
 }
 .tileBankTile {
   border: 1px black solid;
@@ -209,7 +214,7 @@
 }
 #noTilesMsg.darkMode {
   color: black;
-  background-color: #9f9696;
+  background-color: #b8b8b8;
 }
 #portal .hintModalContainer {
   position: fixed;
@@ -300,6 +305,10 @@
   padding: 10px;
   color: black;
 }
+#winModal.darkMode {
+  background-color: #302e2e;
+  color: white;
+}
 #winModalImg {
   width: 250px;
   height: 250px;
@@ -361,6 +370,10 @@
   overflow: hidden;
   box-shadow: 2px 1px 1px black;
   color: black;
+}
+#signUpModal.darkMode {
+  background-color: #302e2e;
+  color: white;
 }
 .signUpLink {
   color: blue;
@@ -454,6 +467,10 @@
   overflow: hidden;
   box-shadow: 2px 1px 1px black;
   color: black;
+}
+#logInModal.darkMode {
+  background-color: #302e2e;
+  color: white;
 }
 .logInLink {
   color: blue;
@@ -667,6 +684,10 @@ tr.leaderboardRow {
   box-shadow: 2px 1px 1px black;
   color: black;
 }
+#friendListModal.darkMode {
+  background-color: #302e2e;
+  color: white;
+}
 #currentFriends {
   display: flex;
   flex-direction: column;
@@ -674,6 +695,9 @@ tr.leaderboardRow {
   align-items: center;
   border-right: 1px dashed black;
   height: 350px;
+}
+#currentFriends.darkMode {
+  border-right: 1px dashed white;
 }
 #currentFriendList {
   height: 275px;
@@ -689,6 +713,9 @@ tr.leaderboardRow {
   border-radius: 10px;
   box-shadow: 1px 1px 1px grey;
   list-style-type: none;
+}
+#currentFriendList.darkMode {
+  border: 1px white solid;
 }
 #addFriendContainer {
   width: 50%;

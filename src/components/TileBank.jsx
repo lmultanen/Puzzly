@@ -34,7 +34,6 @@ const TileBank = ({
             const tileIds = tiles.map(tile => tile.id)
 
             if (!tileIds.includes(selected.tile.id)) {
-                // necessary with how I had to refactor this method
                 addToTileBank(selected.tile, {div: e.target})
                 updateGridSquare(selectedTile);
                 setSelected(null);
@@ -71,12 +70,6 @@ const TileBank = ({
 export default TileBank;
 
 // TODO: 
-
-// could add some settings in a tab
-// - disable wiggle
-// - dark mode
-
-// - add some additional styling; consider making background color slightly less harsh
 
 // - add a button to remove all tiles from solve grid and add to bank; basically a reset button
 // - add ability for player to move tile from grid directly to bank rather than swapping?

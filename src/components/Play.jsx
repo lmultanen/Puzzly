@@ -18,7 +18,7 @@ const Play = () => {
     const totalPuzzlyCount = useSelector(state => state.image.totalPuzzlyCount)
 
     const [remainingTiles, setRemainingTiles] = useState([])
-    const [sequencedTiles, setSequencedTiles] = useState([]) // will have a bubble up method from SolveGrid to set this
+    const [sequencedTiles, setSequencedTiles] = useState([])
 
     const [selectedTile, setSelectedTile] = useState(null)
     const [updateGridValue, setUpdateGridValue] = useState(null)
@@ -157,7 +157,6 @@ const Play = () => {
                     setCompleted(true)
         
                     const completedGrid = JSON.parse(window.localStorage.getItem('completedPuzzlyGrid'));
-                    // also load stats here
     
                     const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
                     const savedPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
@@ -411,7 +410,7 @@ const Play = () => {
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
              <div id="playPage">
-                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={loggedIn ? user.lastTime : timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak}/> : null}
+                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={loggedIn ? user.lastTime : timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak} darkMode={darkMode}/> : null}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
                     {!completed ? <p id="hint" className={darkMode ? "darkMode" : ""} onClick={openHintModal}>Hint?</p> : null}
@@ -428,10 +427,3 @@ const Play = () => {
 }
 
 export default Play;
-
-
-// TODO: 
-// - add method on User model to calculate streak after completing loading from local storage
-// - then, can reset puzzly history to empty array and other stats
-// - after that, can start working on the adding friend functionality of leaderboard and displaying friend times
-// - then, just a couple extra cosmetic things and fleshing out other pages. could make a settings tab for dark mode, wiggle toggle
