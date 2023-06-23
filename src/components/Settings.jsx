@@ -28,11 +28,16 @@ const Settings = () => {
 
     return(
         <div id="settingsContainer">
-            placeholder for settings page
-            probably only 2 settings: wiggle on/off, and light/dark mode
-            could probably just save it to local storage
+            <h2>
+                Settings:
+            </h2>
 
-            <button type="toggle" onClick={toggleDarkMode}>Toggle Light/Dark</button>
+            <div className="settingDiv">
+                <label id="darkModeToggleLabel">
+                    Dark Mode:
+                </label>
+                <button type="toggle" id="darkModeToggle" className={darkMode ? "darkMode" : ""} onClick={toggleDarkMode}>{darkMode ? "Disable" : "Enable"}</button>
+            </div>
         </div>
     )
 }

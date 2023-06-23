@@ -22,6 +22,7 @@ export default Nav;
 // - make a logo to put on the home page
 // - flesh out the share text further
 // - then, should be ready to deploy and test on mobile
+// ---- check if need to disable hover functionality on mobile devices
 // - seed a couple hundred images
 // - add a user seed file to .gitignore with admin permissions
 // - could add a play link on leaderboard page for signed in users

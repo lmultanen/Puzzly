@@ -819,3 +819,42 @@ a.homeLink {
   margin-bottom: 2em;
   font-size: small;
 }
+#settingsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2em;
+}
+#settingsContainer h2 {
+  text-decoration: underline;
+  margin-bottom: 2em;
+}
+.settingDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+  max-width: 200px;
+}
+#darkModeToggle {
+  background-color: black;
+  color: white;
+  border: 1px solid black;
+  box-shadow: none;
+  padding: 5px 10px;
+  border-radius: 20px;
+  width: 75px;
+}
+#darkModeToggle:hover {
+  color: gray;
+  cursor: pointer;
+}
+#darkModeToggle.darkMode {
+  background-color: #a7a5a5;
+  color: black;
+}
+#darkModeToggle.darkMode:hover {
+  color: white;
+}

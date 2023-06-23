@@ -406,6 +406,24 @@ const Play = () => {
         setUpdateGridValue(value)
     }
 
+    function str_pad_left(string, pad, length) {
+        return (new Array(length + 1).join(pad) + string).slice(-length);
+      }
+
+    const convertSecsToMins = (timeInSeconds) => {
+        const hours = Math.floor(timeInSeconds / 3600);
+        timeInSeconds = timeInSeconds - (3600 * hours);
+        const mins = Math.floor(timeInSeconds / 60);
+        const seconds = Math.floor(timeInSeconds - (60 * mins));
+        const minsAndSecs = str_pad_left(mins,'0',2) + ':' + str_pad_left(seconds,'0',2);
+        if (hours) {
+            return str_pad_left(hours,'0',2) + ':' + minsAndSecs;
+        }
+        else {
+            return minsAndSecs;
+        }
+    }
+
     return(
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
@@ -416,7 +434,7 @@ const Play = () => {
                     {!completed ? <p id="hint" className={darkMode ? "darkMode" : ""} onClick={openHintModal}>Hint?</p> : null}
                     {showHintModal ? <HintModal setShowHintModal={setShowHintModal} imgUrl={imgUrl}/> : null}
                 </div>
-                <h4 id="timer">Timer: {timer}s</h4>
+                <h4 id="timer">Timer: {convertSecsToMins(timer)}</h4>
                 <SolveGrid selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} removeFromTileBank={removeFromTileBank} addToTileBank={addToTileBank} updateGridValue={updateGridValue} bubbleUpGrid={bubbleUpGrid} savedGrid={savedGrid} completed={completed} imgUrl={imgUrl}/>
                 <br/>
                 <TileBank tiles={remainingTiles} selectedTile={selectedTile} bubbleUpSelected={bubbleUpSelected} addToTileBank={addToTileBank} updateGridSquare={updateGridSquare} imgUrl={imgUrl}/>
