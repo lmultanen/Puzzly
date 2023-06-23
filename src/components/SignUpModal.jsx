@@ -75,6 +75,28 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
 		event.preventDefault();
         dispatch(createUser({ signUp }))
 	};
+
+    const passwordsEqual = () => {
+        if (!signUp.confirmPassword.length) {
+            return true
+        }
+        return signUp.password === signUp.confirmPassword
+    }
+
+    const passwordRequirements = () => {
+        if (!signUp.password.length) {
+            return true
+        }
+        return (signUp.password.length >= 6) && !(/\s/g.test(signUp.password))
+    }
+
+    const usernameRequirements = () => {
+        if (!signUp.username.length) {
+            return true
+        }
+        let alphanumeric = new RegExp(/^[a-z0-9]+$/i)
+        return ((signUp.username.length >=4) && (signUp.username.length <=32) && alphanumeric.test(signUp.username))
+    }
     
     const modalRef = useRef();
 
@@ -102,6 +124,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
                         <div className="formBox">
                             <label htmlFor="username" className="username label">
                                 Username:
+                                {usernameRequirements() ? null : <img className="warningMsg" src="warning.svg" title="Must be between 4 and 32 alphanumeric characters"/>}
                             </label>
                             <div className="formInput">
                                 <input type="text" name="username" placeholder="username" className="textBox" autoFocus="on" required minLength={4} onChange={handleChange('username')} onBlur={handleAdditionalValidate('username')}/>
@@ -117,6 +140,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
                         <div className="formBox">
                             <label htmlFor="password" className="password label">
                                 Password:
+                                {passwordRequirements() ? null : <img className="warningMsg" src="warning.svg" title="Must be at least 6 characters; whitespace not allowed"/>}
                             </label>
                             <div className="formInput">
                                 <input type="Password" name="password" placeholder="Password" className="textBox" required minLength={6} onChange={handleChange('password')}/>
@@ -126,6 +150,7 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
                         <div className="formBox">
                             <label htmlFor="confirm_password" className="password label">
                                 Confirm Password:
+                                {passwordsEqual() ? null : <span><img className="warningMsg" src="warning.svg" title="Passwords Do Not Match"/></span>}
                             </label>
                             <div className="formInput">
                                 <input type="Password" name="confirmPassword" placeholder="Confirm Password" className="textBox" required minLength={6} onChange={handleChange('confirmPassword')}/>
