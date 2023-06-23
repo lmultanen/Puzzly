@@ -16,7 +16,6 @@ const Nav = () => {
 
 export default Nav;
 
-// - make a logo to put on the home page
 // - then, should be ready to deploy and test on mobile
 // ---- check if need to disable hover functionality on mobile devices
 // - seed a couple hundred images

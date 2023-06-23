@@ -28,6 +28,7 @@ const Home = () => {
         (readyToRender && currentPuzzlyNum) ?
          (currentPuzzlyNum !== lastLocalCompleted) ?
             <div className="home-container">
+                <img id="puzzlyLogo" src="puzzlyLogo.png"/>
                 <h1>
                     {`Puzzly #${currentPuzzlyNum}`}
                 </h1>
@@ -40,6 +41,7 @@ const Home = () => {
             </div>
             :
             <div className="home-container solved">
+                <img id="puzzlyLogo" src="puzzlyLogo.png"/>
                 <h3>
                     Congrats Solving Today's Puzzly
                 </h3>
