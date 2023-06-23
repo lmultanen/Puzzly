@@ -16,7 +16,6 @@ const Nav = () => {
 
 export default Nav;
 
-// - better style the win modal stats at least
 // - add front end validation to Sign up form; hook up back end modal as well
 // - flesh out rules page
 // - make a logo to put on the home page

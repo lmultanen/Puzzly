@@ -51,13 +51,6 @@ const WinModal = ({
                     You completed{usedHint ? '*' : ''} Puzzly {puzzlyNumber} in {convertSecsToMins(time)}!
                 </div>
                 <table id="winStatisticsTable">
-                    <thead>
-                        <tr id="statsHeader">
-                            <th>Total Completed</th>
-                            <th>Current Streak</th>
-                            <th>Average Time</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         <tr id="statsValues">
                             <td>{completedPuzzlys ? completedPuzzlys : 1}</td>
@@ -65,6 +58,13 @@ const WinModal = ({
                             <td>{convertSecsToMins(averageTime)}</td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr id="statsHeader">
+                            <th>Total Completed</th>
+                            <th>Current Streak</th>
+                            <th>Average Time</th>
+                        </tr>
+                    </tfoot>
                     {/* if save log of all times, could show a barchart as well later */}
                 </table>
                 <img id="winModalImg" src={imgUrl}/>

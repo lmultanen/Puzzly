@@ -338,6 +338,20 @@
   cursor: pointer;
   color: black;
 }
+#winStatisticsTable {
+  width: 250px;
+}
+#statsHeader {
+  font-size: x-small;
+}
+#statsHeader th {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+#statsValues {
+  font-size: larger;
+  text-align: center;
+}
 @media screen and (max-width: 500px) {
   #winModal {
     height: 80%;
