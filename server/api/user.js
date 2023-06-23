@@ -45,6 +45,24 @@ router.post('/signup', async (req, res, next) => {
     }
 });
 
+router.post('/userExists/:input', async (req, res, next) => {
+    try {
+      const field = req.params.input;
+  
+      const user = await User.findOne({
+        where: { [field]: req.body.value },
+      });
+      if (user) {
+        res.send({ field, isAvailable: false });
+      } else {
+        res.send({ field, isAvailable: true });
+      }
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  });
+
 // adding results
 router.post('/addcurrentresult', async (req, res, next) => {
     try {

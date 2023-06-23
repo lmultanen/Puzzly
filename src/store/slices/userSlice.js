@@ -41,8 +41,6 @@ export const validateSignupForm = createAsyncThunk(
 		return data;
 	}
 );
-// refactor this later
-// need to add in a validate route for this to work
 
 export const addCurrentPuzzlyResult = createAsyncThunk(
     'user/addCurrentPuzzlyResult',
@@ -183,8 +181,6 @@ const userSlice = createSlice({
                 state.status = 'succeeded'
                 state.newFriendName = action.payload.username
                 state.friends = action.payload.friends
-                // do other stuff later
-                // will resend friends list here
             })
             .addCase(addFriend.rejected, (state) => {
                 state.status = 'failed';

@@ -33,29 +33,13 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
     },[token])
 
     const handleChange = (prop) => (event) => {
-		const password = document.querySelector('input[name=password]');
-		const confirm = document.querySelector('input[name=confirm_password]');
 		setSignUp({
 			...signUp,
 			[prop]: event.target.value,
 		});
-		// if (confirm?.value === password?.value) {
-		// 	confirm.setCustomValidity('');
-		// } else {
-		// 	confirm?.setCustomValidity('Passwords do not match!');
-		// }
-        // if (signUp.password === signUp.confirmPassword) {
-		// 	confirm.setCustomValidity('');
-		// } else {
-		// 	confirm.setCustomValidity('Passwords do not match!');
-		// }
 	};
 
-    // FIGURE OUT SOME BETTER VALIDATION
-    // CAN MAKE PASSWORD VALIDATION FRONT END AND JUST USE AS A SPAN
     // HOOK UP THE BACKEND VALIDATOR BETTER
-    // - COULD HAVE A CHECK USER CHARS FOR FRONT END
-    // - COULD HAVE A CHECK PASSWORDS FOR FRONT END
 
 
     const disableButton = () => {
@@ -124,18 +108,13 @@ const SignUpModal = ({ setShowLogInModal, setShowSignUpModal, darkMode }) => {
                         <div className="formBox">
                             <label htmlFor="username" className="username label">
                                 Username:
+                                {!(validate['username']) && signUp.username.length >=4 ? <span id='usernameTaken'>Username taken</span> : null}
                                 {usernameRequirements() ? null : <img className="warningMsg" src="warning.svg" title="Must be between 4 and 32 alphanumeric characters"/>}
                             </label>
                             <div className="formInput">
                                 <input type="text" name="username" placeholder="username" className="textBox" autoFocus="on" required minLength={4} onChange={handleChange('username')} onBlur={handleAdditionalValidate('username')}/>
                             </div>
                         </div>
-
-                        {!validate['username'] && (
-							<p style={{ color: `red` }}>
-								<b>Username is Taken</b>
-							</p>
-						)}
 
                         <div className="formBox">
                             <label htmlFor="password" className="password label">
