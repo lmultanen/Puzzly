@@ -9,11 +9,18 @@ const TileBank = ({
         imgUrl}) => {
 
     const [selected, setSelected] = useState(null)
-    // may ultimately want to move this to a redux store; would be easier than passing around stuff
+    
+    const [darkMode, setDarkMode] = useState(false)
 
     useEffect(() => {
         setSelected(selectedTile)
     },[selectedTile])
+
+    useEffect(() => {
+        if (window.localStorage.getItem('puzzlyDarkMode') === 'true') {
+            setDarkMode(true)
+        }
+    },[])
 
     const onClickHandler = (e) => {
         const selectedTile = tiles.filter(tile => tile.id === (Number(e.target.dataset.tileId)))[0]
@@ -49,12 +56,12 @@ const TileBank = ({
     return(imgUrl ?
             <div id="tileBankContainer">
                 <p>Tile Bank:</p>
-                <div id="tileBank">
+                <div id="tileBank" className={darkMode ? "darkMode" : ""}>
                     {tiles.length ? tiles.map((tile,idx) => (
                         <div  className="tileBankTile" key={idx} data-tile-id={tile.id}>
                             <img style= {{scale: "4",position: "relative", left: `${150 - tile.colId*100}%`, top: `${150 - tile.rowId*100}%`}} data-tile-id={tile.id} onClick={onClickHandler} src={imgUrl}/>
                         </div>
-                    )) : <div>No Tiles Remaining</div>}
+                    )) : <div id='noTilesMsg' className={darkMode ? "darkMode" : ""}>No Tiles Remaining</div>}
                 </div>
             </div>
             : <></>

@@ -21,6 +21,7 @@ const Leaderboard = () => {
     const [fillerList, setFillerList] = useState([1,2,3,4,5])
     const [completedList, setCompletedList] = useState([])
     const [uncompletedList, setUncompletedList] = useState([])
+    const [darkMode, setDarkMode] = useState(false)
 
     useEffect(() => {
         const token = window.localStorage.getItem('puzzlyToken');
@@ -29,6 +30,9 @@ const Leaderboard = () => {
             dispatch(fetchFriendsList())
         }
         dispatch(fetchCurrentPuzzlyNumber())
+        if (window.localStorage.getItem('puzzlyDarkMode') === 'true') {
+            setDarkMode(true)
+        }
     },[])
 
     useEffect(() => {
@@ -139,11 +143,11 @@ const Leaderboard = () => {
                 <div id="logInSignUpDiv">
                     {showLogInModal ? <LogInModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal}/> : null}
                     {showSignUpModal ? <SignUpModal setShowLogInModal={setShowLogInModal} setShowSignUpModal={setShowSignUpModal}/> : null}
-                    <div className="logInLink" onClick={openLogInModal}>
+                    <div className={darkMode ? "logInLink darkMode" : "logInLink"} onClick={openLogInModal}>
                         Log In
                     </div>
                     or
-                    <div className="signUpLink" onClick={openSignUpModal}>
+                    <div className={darkMode ? "signUpLink darkMode" : "signUpLink"} onClick={openSignUpModal}>
                         Sign Up
                     </div>
                     to access leaderboard.
@@ -190,7 +194,7 @@ const Leaderboard = () => {
 
                 <br/>
                 {/* look for a nice log out icon, like exiting door */}
-                <button id="logOutButton" type="click" onClick={logoutHandler}>
+                <button id="logOutButton" className={darkMode ? "darkMode" : ""} type="click" onClick={logoutHandler}>
                     Log Out
                 </button>
             </div>

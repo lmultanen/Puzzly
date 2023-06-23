@@ -31,7 +31,7 @@ const Home = () => {
     // could also change the button from "Play" to "See Puzzly"
 
     return(
-        readyToRender ?
+        (readyToRender && currentPuzzlyNum) ?
          (currentPuzzlyNum !== lastLocalCompleted) ?
             <div className="home-container">
                 {/* <div className="nav-buffer"/> */}
@@ -48,8 +48,6 @@ const Home = () => {
             </div>
             :
             <div className="home-container solved">
-                {/* <div className="nav-buffer"/> */}
-                {/* <h2>Placeholder home page. Will later add a couple buttons (at least), one of which takes users to a page or opens a popup for the Rules, and the other takes users to the 'Play' page, where they will be able to solve the day's Puzzly.</h2> */}
                 <h3>
                     Congrats Solving Today's Puzzly
                 </h3>
@@ -59,9 +57,9 @@ const Home = () => {
                 <Link className="homeLink" to="/play">
                     <button className="playButton">See Puzzly</button>
                 </Link>
-                <Link className="homeLink" to="/rules">
+                {/* <Link className="homeLink" to="/rules">
                     <button className="rulesButton">Rules</button>
-                </Link>
+                </Link> */}
             </div>
         :
         <></>

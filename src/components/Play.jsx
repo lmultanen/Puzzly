@@ -48,6 +48,7 @@ const Play = () => {
     const [streak, setStreak] = useState(null);
 
     const [errorPopup, setErrorPopup] = useState(false)
+    const [darkMode, setDarkMode] = useState(false)
 
     useEffect(() => {
         const token = window.localStorage.getItem('puzzlyToken');
@@ -56,6 +57,9 @@ const Play = () => {
         }
         dispatch(fetchCurrentPuzzlyNumber())
         dispatch(fetchTotalPuzzlyCount())
+        if (window.localStorage.getItem('puzzlyDarkMode') === 'true') {
+            setDarkMode(true)
+        }
     },[])
 
     useEffect(() => {
@@ -410,7 +414,7 @@ const Play = () => {
                 {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={loggedIn ? user.lastTime : timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak}/> : null}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
-                    {!completed ? <p id="hint" onClick={openHintModal}>Hint?</p> : null}
+                    {!completed ? <p id="hint" className={darkMode ? "darkMode" : ""} onClick={openHintModal}>Hint?</p> : null}
                     {showHintModal ? <HintModal setShowHintModal={setShowHintModal} imgUrl={imgUrl}/> : null}
                 </div>
                 <h4 id="timer">Timer: {timer}s</h4>

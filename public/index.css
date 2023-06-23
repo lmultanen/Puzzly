@@ -25,6 +25,10 @@
 .solveGridSquare img {
   position: relative;
 }
+.solveGridSquare.darkMode {
+  background-color: rgba(255, 255, 255, 0.664);
+  border: 1px black solid;
+}
 .solveGridSquare.selected {
   border: 1px blue solid;
   transform: scale(1.1);
@@ -89,15 +93,17 @@
   text-decoration: underline;
   margin-top: 1em;
 }
+#hint.darkMode {
+  color: #d750d3;
+}
 #hint:hover {
   cursor: pointer;
 }
 #navbar {
   display: flex;
   flex-direction: row;
-  height: 80px;
-  justify-content: center;
-  align-items: center;
+  height: 60px;
+  justify-content: space-between;
   background-color: #911691;
   width: 100%;
 }
@@ -113,10 +119,21 @@
 #navbar .selected {
   border-bottom: 1px solid white;
 }
+#navbarRight {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+#homeLink {
+  font-size: 36px;
+}
+.navIcon {
+  height: 25px;
+  width: 25px;
+  color: white;
+  margin: 2px;
+}
 @media screen and (max-width: 500px) {
-  #navbar {
-    height: 120px;
-  }
   #navbar a {
     font-size: large;
   }
@@ -126,10 +143,14 @@
   max-width: 100%;
 }
 #root {
-  min-height: 100%;
+  min-height: 100vh;
 }
 .nav-buffer {
   height: 80px;
+}
+.darkMode {
+  background-color: #302e2e;
+  color: white;
 }
 @media screen and (max-width: 500px) {
   .nav-buffer {
@@ -138,8 +159,7 @@
 }
 #tileBank {
   width: 100%;
-  height: auto;
-  min-height: 130px;
+  height: 250px;
   border: 1px solid black;
   border-radius: 5px;
   display: flex;
@@ -148,12 +168,15 @@
   justify-content: space-evenly;
   margin-bottom: 2em;
 }
+#tileBank.darkMode {
+  background-color: #9f9696;
+}
 .tileBankTile {
   border: 1px black solid;
   border-radius: 5%;
   margin: 0.5em;
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   text-align: center;
   overflow: hidden;
 }
@@ -180,6 +203,13 @@
 #tileBankContainer p {
   font-style: italic;
   margin-bottom: 0.5em;
+}
+#noTilesMsg {
+  margin-top: 2em;
+}
+#noTilesMsg.darkMode {
+  color: black;
+  background-color: #9f9696;
 }
 #portal .hintModalContainer {
   position: fixed;
@@ -252,6 +282,7 @@
   z-index: 1;
   width: 90%;
   height: 80%;
+  min-height: 500px;
   background: white;
   opacity: 95%;
   display: flex;
@@ -267,6 +298,7 @@
   outline-width: 1px;
   box-shadow: 2px 1px 1px black;
   padding: 10px;
+  color: black;
 }
 #winModalImg {
   width: 250px;
@@ -299,7 +331,7 @@
 }
 @media screen and (max-width: 500px) {
   #winModal {
-    height: 70%;
+    height: 80%;
   }
 }
 #portal .signUpModalContainer {
@@ -328,11 +360,15 @@
   animation: animate 0.3s;
   overflow: hidden;
   box-shadow: 2px 1px 1px black;
+  color: black;
 }
 .signUpLink {
   color: blue;
   margin-left: 0.25em;
   margin-right: 0.25em;
+}
+.signUpLink.darkMode {
+  color: #d750d3;
 }
 .signUpLink:hover {
   cursor: pointer;
@@ -417,11 +453,15 @@
   animation: animate 0.3s;
   overflow: hidden;
   box-shadow: 2px 1px 1px black;
+  color: black;
 }
 .logInLink {
   color: blue;
   margin-left: 0.25em;
   margin-right: 0.25em;
+}
+.logInLink.darkMode {
+  color: #d750d3;
 }
 .logInLink:hover {
   cursor: pointer;
@@ -586,8 +626,15 @@ tr.leaderboardRow {
   border-radius: 20px;
   width: fit-content;
 }
+#logOutButton.darkMode {
+  background-color: #a7a5a5;
+  color: black;
+}
 #logOutButton:hover {
   color: gray;
+}
+#logOutButton.darkMode:hover {
+  color: white;
 }
 #portal .friendListModalContainer {
   position: fixed;
@@ -618,6 +665,7 @@ tr.leaderboardRow {
   animation: animate 0.3s;
   overflow: hidden;
   box-shadow: 2px 1px 1px black;
+  color: black;
 }
 #currentFriends {
   display: flex;

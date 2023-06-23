@@ -11,18 +11,13 @@ const SolveGrid = ({
         completed,
         imgUrl}) => {
 
-    // const baseGrid = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]];
-
     const [grid,setGrid] = useState(null);
     const [selected, setSelected] = useState(null);
     const [swapCoords, setSwapCoords] = useState(null);
+    const [darkMode, setDarkMode] = useState(false)
 
     useEffect(() => {
-        // will first want to check if anything in local storage
-
         setGrid(savedGrid);
-        // maybe on page exit, save grid to local storage
-        // on page open, check if local storage grid exists. if so, parse, otherwise use baseGrid
     },[savedGrid])
 
     useEffect(() => {
@@ -47,6 +42,12 @@ const SolveGrid = ({
     useEffect(() => {
         // just want to make sure grid not clickable when puzzly completed
     },[completed])
+
+    useEffect(() => {
+        if (window.localStorage.getItem('puzzlyDarkMode') === 'true') {
+            setDarkMode(true)
+        }
+    },[])
 
     const onClickHandler = (rowId,colId) => (e) => {
         if (!completed){
@@ -92,7 +93,7 @@ const SolveGrid = ({
                 <div className="solveGridRow" key={rowId}>
                     {row.map((col,colId) => (
                         // may ultimately move this div into separate componenet
-                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''}`} key={colId} data-tile-id={col?.id ? col.id : 0} onClick={onClickHandler(rowId,colId)}>
+                        <div className={`${selected ? "solveGridSquare wiggle" : "solveGridSquare"} ${(col && !completed) ? "clickable" : ""} ${((Number(selected?.tile.id) === col?.id))? "selected" : ''} ${darkMode ? "darkMode" : ""}`} key={colId} data-tile-id={col?.id ? col.id : 0} onClick={onClickHandler(rowId,colId)}>
                             {col?.id ? 
                                 <img style= {{scale: "4",position: "relative", left: `${150 - col.colId*100}%`, top: `${150 - col.rowId*100}%`}} src={imgUrl} data-tile-id={col?.id ? col.id : 0}/> 
                                 : ''
