@@ -2,9 +2,10 @@ const Sequelize = require('sequelize');
 const db = require('../db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const UserResult = require('./UserResult')
+require('dotenv').config();
 const jwtStr = process.env.JWT || 'dummyString';
 const saltRounds = Number(process.env.SALT || 8);
-const UserResult = require('./UserResult')
 
 // just building out basic fields for now
 // first iteration will not have user functionality, will build out later
@@ -83,6 +84,7 @@ const User = db.define('user', {
 //authentication
 User.prototype.generateToken = function () {
     // ENSURE LATER THAT jwtStr IS APPROPRIATELY READING FOR .ENV FILE
+    console.log(jwtStr)
     return jwt.sign({ id: this.id }, jwtStr);
   };  
 
