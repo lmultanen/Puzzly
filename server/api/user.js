@@ -140,21 +140,22 @@ router.get('/friends', async (req, res, next) => {
 router.get('/allusers',isAdmin, async (req, res, next) => {
     try {
         // get all admins; can paginate
-        if (req.query.page) {
-            const orderArr =
-              req.query.sort === 'true'
-                ? [Sequelize.fn('lower', Sequelize.col('username')), 'asc']
-                : ['id', 'asc'];
-            const { rows, count } = await User.findAndCountAll({
-              order: [orderArr],
-              offset: (req.query.page - 1) * 25,
-              limit: 25,
-            });
-            res.send({ rows, count });
-          } else {
+        // if (req.query.page) {
+        //     const orderArr =
+        //       req.query.sort === 'true'
+        //         ? [Sequelize.fn('lower', Sequelize.col('username')), 'asc']
+        //         : ['id', 'asc'];
+        //     const { rows, count } = await User.findAndCountAll({
+        //       order: [orderArr],
+        //       offset: (req.query.page - 1) * 25,
+        //       limit: 25,
+        //     });
+        //     res.send({ rows, count });
+        //   } else {
+            // if (token)
             const { rows, count } = await User.findAndCountAll();
             res.send({ rows, count });
-        }
+        // }
     } catch (error) {
         next(error)
     }
