@@ -63,10 +63,10 @@ const Play = () => {
     },[])
 
     useEffect(() => {
-        if (loggedIn && puzzlyHistory.length && currentPuzzlyNum) {
+        if (loggedIn && puzzlyHistory?.length && currentPuzzlyNum) {
             addSavedStatsToUser()
         }
-    },[loggedIn, puzzlyHistory.length, currentPuzzlyNum])
+    },[loggedIn, puzzlyHistory?.length, currentPuzzlyNum])
 
     useEffect(() => {
         if (currentPuzzlyNum && totalPuzzlyCount) {
@@ -160,7 +160,7 @@ const Play = () => {
     
                     const savedAverageTime = Number(window.localStorage.getItem('averagePuzzlyTime'));
                     const savedPuzzlyHistory = JSON.parse(window.localStorage.getItem('puzzlyHistory'));
-                    setAverageTime(savedPuzzlyHistory.length ? savedAverageTime : lastTime);
+                    setAverageTime(savedPuzzlyHistory?.length ? savedAverageTime : lastTime);
                     setPuzzlyHistory(savedPuzzlyHistory)
                     setSavedGrid(completedGrid)
                     openWinModal()
@@ -428,7 +428,7 @@ const Play = () => {
         // - look into how can make sure grid/tilebank also ready to render at same time?
         readyToRender ?
              <div id="playPage">
-                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={loggedIn ? user.lastTime : timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak} darkMode={darkMode}/> : null}
+                {showWinModal ? <WinModal setShowWinModal={setShowWinModal} imgUrl={imgUrl} time={loggedIn ? user.lastTime : timer} puzzlyNumber={currentPuzzlyNum} usedHint={usedHint} completedPuzzlys={loggedIn ? user.completed : puzzlyHistory?.length} averageTime={loggedIn ? user.avgTime :averageTime} streak={loggedIn ? user.completedStreak : streak} darkMode={darkMode}/> : null}
                 <div id="titleHintContainer">
                     <h2>Puzzly #{currentPuzzlyNum}</h2>
                     {!completed ? <p id="hint" className={darkMode ? "darkMode" : ""} onClick={openHintModal}>Hint?</p> : null}
