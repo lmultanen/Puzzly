@@ -15,7 +15,7 @@ router.get('/', async (req, res, next) => {
 router.get('/currentpuzzly', (req, res, next) => {
     try {
         // date of soft launch
-        const startDate = new Date("6/23/2023")
+        const startDate = new Date("6/26/2023")
         const currentDate = new Date()
         const diffTime = Math.abs(currentDate - startDate);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))+1; 
