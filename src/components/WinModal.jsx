@@ -38,8 +38,9 @@ const WinModal = ({
     }
 
     const shareButtonClickHandler = () => {
-        navigator.clipboard.writeText(`Completed Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}${usedHint ? '*' : ''}!\nFollow link to play: www.puzzly.us 🧩 `);
-        Toastify({text: "Copied to clipboard!", duration:1000 ,gravity: "bottom", position: "right", backgroundColor: "dodgerBlue"}).showToast();
+        navigator.clipboard.writeText(`Completed Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}${usedHint ? '*' : ''}!\nFollow link to play: www.puzzly.us 🧩 `)
+            .then(() => {Toastify({text: "Copied to clipboard!", duration:1000 ,gravity: "bottom", position: "right", backgroundColor: "dodgerBlue"}).showToast();})
+            .catch(() => {alert("Something went wrong")});
     }
 
     return ReactDom.createPortal(
