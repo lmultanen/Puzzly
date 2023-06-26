@@ -49,8 +49,6 @@
     margin: auto;
     justify-content: center;
     align-items: center;
-    // min-width: 60%;
-    // max-width: 90%;
     width: 75%;
     min-height: 150px;
     p {
@@ -66,4 +64,10 @@
 #noTilesMsg.darkMode {
     color: black;
     background-color: rgb(184, 184, 184);;
+}
+
+@media screen and (max-width: 500px){
+    .tileBankTile:hover {
+        transform: none;
+    }
 }

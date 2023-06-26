@@ -71,6 +71,12 @@
   cursor: pointer;
   transform: scale(1.1);
 }
+@media screen and (max-width: 500px) {
+  .clickable:hover,
+  .wiggle:hover {
+    transform: none;
+  }
+}
 #playPage {
   display: flex;
   flex-direction: column;
@@ -221,6 +227,11 @@ body {
 #noTilesMsg.darkMode {
   color: black;
   background-color: #b8b8b8;
+}
+@media screen and (max-width: 500px) {
+  .tileBankTile:hover {
+    transform: none;
+  }
 }
 #portal .hintModalContainer {
   position: fixed;
