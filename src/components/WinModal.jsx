@@ -38,7 +38,7 @@ const WinModal = ({
     }
 
     const shareButtonClickHandler = () => {
-        navigator.clipboard.writeText(`Completed Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}${usedHint ? '*' : ''}!\nFollow link to play: puzzly.us 🧩 `);
+        navigator.clipboard.writeText(`Completed Puzzly ${puzzlyNumber} in ${convertSecsToMins(time)}${usedHint ? '*' : ''}!\nFollow link to play: www.puzzly.us 🧩 `);
         Toastify({text: "Copied to clipboard!", duration:1000 ,gravity: "bottom", position: "right", backgroundColor: "dodgerBlue"}).showToast();
     }
 
