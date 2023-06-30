@@ -84,7 +84,6 @@ const User = db.define('user', {
 //authentication
 User.prototype.generateToken = function () {
     // ENSURE LATER THAT jwtStr IS APPROPRIATELY READING FOR .ENV FILE
-    console.log(jwtStr)
     return jwt.sign({ id: this.id }, jwtStr);
   };  
 

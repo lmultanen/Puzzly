@@ -66,7 +66,7 @@ const Leaderboard = () => {
         if (!userState.isLoggedIn) {
             setFillerList([1,2,3,4,5])
         }
-    },[currentPuzzlyNum,userState.isLoggedIn,friendsList.length,userState.userInfo.lastCompleted])
+    },[currentPuzzlyNum,userState.isLoggedIn,friendsList.length,userState.userInfo?.lastCompleted])
 
     const generateLeaderBoardLists = () => {
         let completed = friendsList.filter(friend => friend.lastCompleted === currentPuzzlyNum)

@@ -58,7 +58,6 @@ router.post('/userExists/:input', async (req, res, next) => {
         res.send({ field, isAvailable: true });
       }
     } catch (error) {
-      console.error(error);
       next(error);
     }
   });
@@ -153,6 +152,7 @@ router.get('/allusers',isAdmin, async (req, res, next) => {
         //     res.send({ rows, count });
         //   } else {
             // if (token)
+            console.log("in allusers api")
             const { rows, count } = await User.findAndCountAll();
             res.send({ rows, count });
         // }
