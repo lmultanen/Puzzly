@@ -262,6 +262,7 @@ User.prototype.addFriendByUsername = async function (username) {
     }); 
     if (friend) {
         await this.addFriend(friend)
+        await friend.addFriend(this)
     }
     else {
         throw new Error("User not found")
